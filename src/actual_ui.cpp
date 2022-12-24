@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include <ctime>
+#include <iostream>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -17,11 +18,17 @@ GLFWwindow* window;
 using namespace glm;
 
 #include "shader.hpp"
+#include "game_board.hpp"
 #include "game.hpp"
 #include "actual_ui.hpp"
 #include "texture.hpp"
+#include "randomAI.hpp"
+#include "terminal_ui.hpp"
 
-void run(GameBoard board) {
+void run() {
+  int playerAmount = 4;
+  Game game = createGame(playerAmount);
+
   srand (static_cast <unsigned> (time(0)));
 	// Initialise GLFW
 	if( !glfwInit() )
@@ -112,9 +119,9 @@ void run(GameBoard board) {
   // tile amount * triangle per tile * vertex per triangle * float per vertex
 	GLfloat g_color_buffer_data[TILE_AMOUNT * float_per_tile];
 	for (int v = 0; v < TILE_AMOUNT ; v++){
-    float c1 = tile_colours[board.tiles[v] * 3 + 0];
-    float c2 = tile_colours[board.tiles[v] * 3 + 1];
-    float c3 = tile_colours[board.tiles[v] * 3 + 2];
+    float c1 = tile_colours[game.board.tiles[v] * 3 + 0];
+    float c2 = tile_colours[game.board.tiles[v] * 3 + 1];
+    float c3 = tile_colours[game.board.tiles[v] * 3 + 2];
     for (int b = 0; b < vertex_per_tile; b++) {
       g_color_buffer_data[float_per_tile*v+b*3+0] = c1;
       g_color_buffer_data[float_per_tile*v+b*3+1] = c2;
@@ -146,7 +153,7 @@ void run(GameBoard board) {
   GLfloat g_uv_vertex_buffer_data[NUMBER_AMOUNT * float_per_number];
   int desertsFound = 0;
   for (int i = 0; i < TILE_AMOUNT; i++) {
-    if (board.tiles[i] == DESERT) {
+    if (game.board.tiles[i] == DESERT) {
       desertsFound++;
       continue;
     }
@@ -160,7 +167,7 @@ void run(GameBoard board) {
 
 	GLfloat g_uv_buffer_data[NUMBER_AMOUNT * 6 * 2];
 	for (int i = 0; i < NUMBER_AMOUNT; i++) {
-    int number = board.numbers[i];
+    int number = game.board.numbers[i];
     float basex = number_bases[number * 2 + 0];
     float basey = number_bases[number * 2 + 1];
 		g_uv_buffer_data[i * 12 + 0] = basex + small;
@@ -202,25 +209,25 @@ void run(GameBoard board) {
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
 
+  int lastTime = time(0);
+  std::cout << "\n";
 	do{
-		//glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+    int thisTime = time(0);
+    if (thisTime - lastTime) {
+      askAction(game);
+      lastTime = thisTime;
+
+    }
+		// glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
 
-		// Use our shader
 		glUseProgram(programID);
-
-		// Send our transformation to the currently bound shader,
-		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-
-		// 1st attribute buffer : vertices
-
-
+    // Vertices
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
@@ -230,9 +237,7 @@ void run(GameBoard board) {
 			0,                  // stride
 			(void*)0            // array buffer offset
 		);
-
-		// 2nd attribute buffer : colors
-
+    // Colours
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
@@ -242,18 +247,18 @@ void run(GameBoard board) {
 			0,                                // stride
 			(void*)0                          // array buffer offset
 		);
-
-		// Draw the triangle !
 		glDrawArrays(GL_TRIANGLES, 0, TILE_AMOUNT * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
+
 
 
 		glUseProgram(UVprogramID);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
+    // Additional stuff for textures
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture);
 		glUniform1i(TextureID, 0);
-
+    // Vertices
 		glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
@@ -263,6 +268,7 @@ void run(GameBoard board) {
 			0,                  // stride
 			(void*)0            // array buffer offset
 		);
+    // Colours
 		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
@@ -274,9 +280,9 @@ void run(GameBoard board) {
 		);
     glDrawArrays(GL_TRIANGLES, 0, NUMBER_AMOUNT * vertex_per_number);
 
+
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
-
 		// Swap buffers
 		glfwSwapBuffers(window);
 		glfwPollEvents();

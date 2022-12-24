@@ -1,7 +1,7 @@
 #ifndef ACTUAL_UI_HPP
 #define ACTUAL_UI_HPP
 
-#include "game.hpp"
+#include "game_board.hpp"
 
 static const int vertex_per_tile = 18;
 static const int float_per_tile = vertex_per_tile * 3;
@@ -70,6 +70,6 @@ static const float square_deltas[6 * 3] {
   -square_radius, -square_radius, 0.0f
 };
 
-void run(GameBoard);
+void run();
 
 #endif
