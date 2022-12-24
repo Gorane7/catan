@@ -91,24 +91,26 @@ void run(GameBoard board) {
 
 
   int tile_amount = 19;
+  int vertex_per_tile = 18;
+  int float_per_tile = vertex_per_tile * 3;
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-  static GLfloat g_vertex_buffer_data[19 * 6 * 3 * 3];
+  GLfloat g_vertex_buffer_data[tile_amount * float_per_tile];
   for (int i = 0; i < tile_amount; i++) {
-    for (int j = 0; j < 3 * 18; j++) {
-      g_vertex_buffer_data[i * 18 * 3 + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
+    for (int j = 0; j < float_per_tile; j++) {
+      g_vertex_buffer_data[i * float_per_tile + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
     }
   }
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-	static GLfloat g_color_buffer_data[19 * 6 * 3 * 3];
-	for (int v = 0; v < 19 ; v++){
+	GLfloat g_color_buffer_data[tile_amount * float_per_tile];
+	for (int v = 0; v < tile_amount ; v++){
     float c1 = tile_colours[board.tiles[v] * 3 + 0];
     float c2 = tile_colours[board.tiles[v] * 3 + 1];
     float c3 = tile_colours[board.tiles[v] * 3 + 2];
-    for (int b = 0; b < 18; b++) {
-      g_color_buffer_data[18*3*v+b*3+0] = c1;
-      g_color_buffer_data[18*3*v+b*3+1] = c2;
-      g_color_buffer_data[18*3*v+b*3+2] = c3;
+    for (int b = 0; b < vertex_per_tile; b++) {
+      g_color_buffer_data[float_per_tile*v+b*3+0] = c1;
+      g_color_buffer_data[float_per_tile*v+b*3+1] = c2;
+      g_color_buffer_data[float_per_tile*v+b*3+2] = c3;
     }
 	}
 
@@ -171,7 +173,7 @@ void run(GameBoard board) {
 		);
 
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, 19*6*3); // 12*3 indices starting at 0 -> 12 triangles
+		glDrawArrays(GL_TRIANGLES, 0, tile_amount * float_per_tile); // 12*3 indices starting at 0 -> 12 triangles
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -181,8 +183,7 @@ void run(GameBoard board) {
 		glfwPollEvents();
 
 	} // Check if the ESC key was pressed or the window was closed
-	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-		   glfwWindowShouldClose(window) == 0 );
+	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
 
 	// Cleanup VBO and shader
 	glDeleteBuffers(1, &vertexbuffer);
