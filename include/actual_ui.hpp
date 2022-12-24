@@ -3,7 +3,6 @@
 
 #include "game.hpp"
 
-static const int tile_amount = 19;
 static const int vertex_per_tile = 18;
 static const int float_per_tile = vertex_per_tile * 3;
 static const int vertex_per_number = 6;

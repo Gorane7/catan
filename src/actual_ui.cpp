@@ -102,26 +102,16 @@ void run(GameBoard board) {
 	glm::mat4 MVP        = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-  GLfloat g_vertex_buffer_data[tile_amount * float_per_tile];
-  for (int i = 0; i < tile_amount; i++) {
+  GLfloat g_vertex_buffer_data[TILE_AMOUNT * float_per_tile];
+  for (int i = 0; i < TILE_AMOUNT; i++) {
     for (int j = 0; j < float_per_tile; j++) {
       g_vertex_buffer_data[i * float_per_tile + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
     }
   }
 
-  GLfloat g_uv_vertex_buffer_data[tile_amount * float_per_number];
-  for (int i = 0; i < tile_amount; i++) {
-    for (int j = 0; j < float_per_number; j++) {
-      g_uv_vertex_buffer_data[i * float_per_number + j] = tile_centers[i * 3 + j % 3] + square_deltas[j];
-      if (j % 3 == 2) {
-        g_uv_vertex_buffer_data[i * float_per_number + j] += square_height;
-      }
-    }
-  }
-
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-	GLfloat g_color_buffer_data[tile_amount * float_per_tile];
-	for (int v = 0; v < tile_amount ; v++){
+	GLfloat g_color_buffer_data[TILE_AMOUNT * float_per_tile];
+	for (int v = 0; v < TILE_AMOUNT ; v++){
     float c1 = tile_colours[board.tiles[v] * 3 + 0];
     float c2 = tile_colours[board.tiles[v] * 3 + 1];
     float c3 = tile_colours[board.tiles[v] * 3 + 2];
@@ -131,8 +121,8 @@ void run(GameBoard board) {
       g_color_buffer_data[float_per_tile*v+b*3+2] = c3;
     }
 	}
-  /*for (int i = 0; i < tile_amount * float_per_number; i++) {
-    g_color_buffer_data[tile_amount * float_per_tile + i] = 0.9f;
+  /*for (int i = 0; i < TILE_AMOUNT * float_per_number; i++) {
+    g_color_buffer_data[TILE_AMOUNT * float_per_tile + i] = 0.9f;
   }*/
 
   static const float small = 0.0f;
@@ -152,9 +142,25 @@ void run(GameBoard board) {
     0.0f, 0.25f, // 11
     0.25f, 0.25f, // 12
   };
-	GLfloat g_uv_buffer_data[19 * 6 * 2];
-	for (int i = 0; i < 19; i++) {
-    int number = numberAtTile(board, i);
+
+  GLfloat g_uv_vertex_buffer_data[NUMBER_AMOUNT * float_per_number];
+  int desertsFound = 0;
+  for (int i = 0; i < TILE_AMOUNT; i++) {
+    if (board.tiles[i] == DESERT) {
+      desertsFound++;
+      continue;
+    }
+    for (int j = 0; j < float_per_number; j++) {
+      g_uv_vertex_buffer_data[(i - desertsFound) * float_per_number + j] = tile_centers[i * 3 + j % 3] + square_deltas[j];
+      if (j % 3 == 2) {
+        g_uv_vertex_buffer_data[(i - desertsFound) * float_per_number + j] += square_height;
+      }
+    }
+  }
+
+	GLfloat g_uv_buffer_data[NUMBER_AMOUNT * 6 * 2];
+	for (int i = 0; i < NUMBER_AMOUNT; i++) {
+    int number = board.numbers[i];
     float basex = number_bases[number * 2 + 0];
     float basey = number_bases[number * 2 + 1];
 		g_uv_buffer_data[i * 12 + 0] = basex + small;
@@ -238,7 +244,7 @@ void run(GameBoard board) {
 		);
 
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, tile_amount * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
+		glDrawArrays(GL_TRIANGLES, 0, TILE_AMOUNT * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
 
 
 		glUseProgram(UVprogramID);
@@ -266,7 +272,7 @@ void run(GameBoard board) {
 			0,                                // stride
 			(void*)0                          // array buffer offset
 		);
-    glDrawArrays(GL_TRIANGLES, 0, tile_amount * vertex_per_number);
+    glDrawArrays(GL_TRIANGLES, 0, NUMBER_AMOUNT * vertex_per_number);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
