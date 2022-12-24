@@ -1,0 +1,7 @@
+build/glfw/
+build/external/
+build/cmake_install.cmake
+build/Makefile
+build/Catan
+build/CMakeFiles/
+build/CMakeCache.txt

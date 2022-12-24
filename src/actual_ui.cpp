@@ -18,6 +18,7 @@ using namespace glm;
 
 #include "shader.hpp"
 #include "game.hpp"
+#include "actual_ui.hpp"
 
 void run(GameBoard board) {
   srand (static_cast <unsigned> (time(0)));
@@ -78,77 +79,28 @@ void run(GameBoard board) {
 	// Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 	// Camera matrix
-	glm::mat4 View       = glm::lookAt(
-								glm::vec3(-0.5,-2,10), // Camera is at (4,3,-3), in World Space
-								glm::vec3(0,-0.2,0), // and looks at the origin
-								glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
-						   );
+	glm::mat4 View  = glm::lookAt(
+	  glm::vec3(-0.5,-2,10), // Camera is at (4,3,-3), in World Space
+		glm::vec3(0,-0.2,0), // and looks at the origin
+		glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+	);
 	// Model matrix : an identity matrix (model will be at the origin)
 	glm::mat4 Model      = glm::mat4(1.0f);
 	// Our ModelViewProjection : multiplication of our 3 matrices
 	glm::mat4 MVP        = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-	// Our vertices. Tree consecutive floats give a 3D vertex; Three consecutive vertices give a triangle.
-	// A cube has 6 faces with 2 triangles each, so this makes 6*2=12 triangles, and 12*3 vertices
-  static const float tile_deltas[18*3] = {
-		0.0f, 0.0f, 0.0f,     // center
-    -0.866f, 0.5f, 0.0f,  // left top
-    0.0f, 1.0f, 0.0f,     // top
-    0.0f, 0.0f, 0.0f,     // center
-    0.0f, 1.0f, 0.0f,     // top
-    0.866f, 0.5f, 0.0f,  // right top
-    0.0f, 0.0f, 0.0f,     // center
-    0.866f, 0.5f, 0.0f,  // right top
-    0.866f, -0.5f, 0.0f,  // right bottom
-    0.0f, 0.0f, 0.0f,     // center
-    0.866f, -0.5f, 0.0f,  // right bottom
-    0.0f, -1.0f, 0.0f,     // bottom
-    0.0f, 0.0f, 0.0f,     // center
-    0.0f, -1.0f, 0.0f,     // bottom
-    -0.866f, -0.5f, 0.0f,  // left bottom
-    0.0f, 0.0f, 0.0f,     // center
-    -0.866f, -0.5f, 0.0f,  // left bottom
-    -0.866f, 0.5f, 0.0f,  // left top
-	};
-  static const float tile_colours[] = {
-    1.0f, 1.0f, 0.5f,
-    0.1f, 0.5f, 0.1f,
-    0.1f, 1.0f, 0.1f,
-    0.9f, 0.9f, 0.1f,
-    0.7f, 0.7f, 0.7f,
-    0.5f, 0.2f, 0.2f
-  };
+
   int tile_amount = 19;
-  static const float tile_centers[] = {
-    -1.732f, 3.0f, 0.0f,
-    0.0f, 3.0f, 0.0f,
-    1.732f, 3.0f, 0.0f,
-    -2.598f, 1.5f, 0.0f,
-    -0.866f, 1.5f, 0.0f,
-    0.866f, 1.5f, 0.0f,
-    2.598f, 1.5f, 0.0f,
-    -3.464f, 0.0f, 0.0f,
-    -1.732f, 0.0f, 0.0f,
-    0.0f, 0.0f, 0.0f,
-    1.732f, 0.0f, 0.0f,
-    3.464f, 0.0f, 0.0f,
-    -2.598f, -1.5f, 0.0f,
-    -0.866f, -1.5f, 0.0f,
-    0.866f, -1.5f, 0.0f,
-    2.598f, -1.5f, 0.0f,
-    -1.732f, -3.0f, 0.0f,
-    0.0f, -3.0f, 0.0f,
-    1.732f, -3.0f, 0.0f
-  };
-  static GLfloat g_vertex_buffer_data[18 * 3 * 19];
+  // tile amount * triangle per tile * vertex per triangle * float per vertex
+  static GLfloat g_vertex_buffer_data[19 * 6 * 3 * 3];
   for (int i = 0; i < tile_amount; i++) {
     for (int j = 0; j < 3 * 18; j++) {
       g_vertex_buffer_data[i * 18 * 3 + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
     }
   }
 
-	// One color for each vertex. They were generated randomly.
-	static GLfloat g_color_buffer_data[19*18*3];
+  // tile amount * triangle per tile * vertex per triangle * float per vertex
+	static GLfloat g_color_buffer_data[19 * 6 * 3 * 3];
 	for (int v = 0; v < 19 ; v++){
     float c1 = tile_colours[board.tiles[v] * 3 + 0];
     float c2 = tile_colours[board.tiles[v] * 3 + 1];
