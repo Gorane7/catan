@@ -93,16 +93,26 @@ void run(GameBoard board) {
   int tile_amount = 19;
   int vertex_per_tile = 18;
   int float_per_tile = vertex_per_tile * 3;
+  int float_per_number = 6 * 3;
+  float square_height = 0.01f;
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-  GLfloat g_vertex_buffer_data[tile_amount * float_per_tile];
+  GLfloat g_vertex_buffer_data[tile_amount * float_per_tile + tile_amount * float_per_number];
   for (int i = 0; i < tile_amount; i++) {
     for (int j = 0; j < float_per_tile; j++) {
       g_vertex_buffer_data[i * float_per_tile + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
     }
   }
+  for (int i = 0; i < tile_amount; i++) {
+    for (int j = 0; j < float_per_number; j++) {
+      g_vertex_buffer_data[tile_amount * float_per_tile + i * float_per_number + j] = tile_centers[i * 3 + j % 3] + square_deltas[j];
+      if (j % 3 == 2) {
+        g_vertex_buffer_data[tile_amount * float_per_tile + i * float_per_number + j] += square_height;
+      }
+    }
+  }
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-	GLfloat g_color_buffer_data[tile_amount * float_per_tile];
+	GLfloat g_color_buffer_data[tile_amount * float_per_tile + tile_amount * float_per_number];
 	for (int v = 0; v < tile_amount ; v++){
     float c1 = tile_colours[board.tiles[v] * 3 + 0];
     float c2 = tile_colours[board.tiles[v] * 3 + 1];
@@ -113,6 +123,9 @@ void run(GameBoard board) {
       g_color_buffer_data[float_per_tile*v+b*3+2] = c3;
     }
 	}
+  for (int i = 0; i < tile_amount * float_per_number; i++) {
+    g_color_buffer_data[tile_amount * float_per_tile + i] = 0.9f;
+  }
 
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);

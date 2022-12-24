@@ -3,7 +3,7 @@
 
 #include "game.hpp"
 
-static const float tile_deltas[18*3] = {
+static const float tile_deltas[18 * 3] = {
   0.0f, 0.0f, 0.0f,     // center
   -0.866f, 0.5f, 0.0f,  // left top
   0.0f, 1.0f, 0.0f,     // top
@@ -23,7 +23,7 @@ static const float tile_deltas[18*3] = {
   -0.866f, -0.5f, 0.0f,  // left bottom
   -0.866f, 0.5f, 0.0f,  // left top
 };
-static const float tile_colours[] = {
+static const float tile_colours[6 * 3] = {
   1.0f, 1.0f, 0.5f,
   0.1f, 0.5f, 0.1f,
   0.1f, 1.0f, 0.1f,
@@ -32,7 +32,7 @@ static const float tile_colours[] = {
   0.5f, 0.2f, 0.2f
 };
 
-static const float tile_centers[] = {
+static const float tile_centers[19 * 3] = {
   -1.732f, 3.0f, 0.0f,
   0.0f, 3.0f, 0.0f,
   1.732f, 3.0f, 0.0f,
@@ -52,6 +52,16 @@ static const float tile_centers[] = {
   -1.732f, -3.0f, 0.0f,
   0.0f, -3.0f, 0.0f,
   1.732f, -3.0f, 0.0f
+};
+
+static const float square_radius = 0.2f;
+static const float square_deltas[6 * 3] {
+  -square_radius, square_radius, 0.0f,
+  square_radius, square_radius, 0.0f,
+  -square_radius, -square_radius, 0.0f,
+  square_radius, -square_radius, 0.0f,
+  square_radius, square_radius, 0.0f,
+  -square_radius, -square_radius, 0.0f
 };
 
 void run(GameBoard);
