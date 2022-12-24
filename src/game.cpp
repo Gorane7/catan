@@ -1,0 +1,99 @@
+#include "game.hpp"
+
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+
+GameBoard randomBoard() {
+  return randomBoard(false);
+}
+
+int numberAtTile(GameBoard board, int tile) {
+  if (board.tiles[tile] == DESERT) {
+    return -1;
+  }
+  int desertsFound = 0;
+  for (int i = 0; i < tile; i++) {
+    if (board.tiles[i] == DESERT) {
+      desertsFound += 1;
+    }
+  }
+  return board.numbers[tile - desertsFound];
+}
+
+GameBoard randomBoard(bool numbersAreIndex) {
+  GameBoard board;
+  srand((unsigned)time(0));
+
+  // Prefill tile array
+  int i = 0;
+  for (int j = 0; j < TILE_TYPE_AMOUNT; j++) {
+    for (int k = 0; k < TILE_AMOUNTS[j]; k++) {
+      board.tiles[i] = j;
+      i++;
+    }
+  }
+  // Shuffle tile array
+  for (int i = TILE_AMOUNT - 1; i >= 0; i--) {
+    int takeFrom = rand() % (i + 1);
+    int temp = board.tiles[takeFrom];
+    board.tiles[takeFrom] = board.tiles[i];
+    board.tiles[i] = temp;
+  }
+  // Find desert and therefore robber location
+  for (int i = 0; i < TILE_AMOUNT; i++) {
+    if (board.tiles[i] == DESERT) {
+      if (numbersAreIndex) {
+        board.tiles[i] = board.tiles[18];
+        board.tiles[18] = DESERT;
+      }
+      board.robberLocation = i;
+      break;
+    }
+  }
+
+  // Prefill number array
+  for (int i = 0; i < NUMBER_AMOUNT; i++) {
+    board.numbers[i] = NUMBERS[i];
+  }
+
+  // Shuffle number array until no 6 or 8 is next to each other
+  bool sixOrEightNeighbours;
+  do {
+    for (int i = NUMBER_AMOUNT - 1; i >= 0; i--) {
+      int takeFrom = rand() % (i + 1);
+      int temp = board.numbers[takeFrom];
+      board.numbers[takeFrom] = board.numbers[i];
+      board.numbers[i] = temp;
+    }
+    sixOrEightNeighbours = false;
+    for (int i = 0; i < TILE_AMOUNT; i++) {
+      if (i == board.robberLocation) {
+        continue;
+      }
+      int thisNumber = numberAtTile(board, i);
+      if (thisNumber != 6 && thisNumber != 8) {
+        continue;
+      }
+      for (int j = 0; j < 6; j++) {
+        if (NEIGHBOURS[i * 6 + j] == -1) {
+          continue;
+        }
+        int otherNumber = numberAtTile(board, NEIGHBOURS[i * 6 + j]);
+        if (otherNumber == 6 || otherNumber == 8) {
+          sixOrEightNeighbours = true;
+          break;
+        }
+      }
+    }
+  } while (sixOrEightNeighbours);
+
+  // If indexes should be displayed on board, then overwrite numbers
+  if (numbersAreIndex) {
+    board.robberLocation = 18;
+    for (int i = 0; i < NUMBER_AMOUNT; i++) {
+      board.numbers[i] = i;
+    }
+  }
+  return board;
+}
