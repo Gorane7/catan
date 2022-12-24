@@ -96,7 +96,7 @@ void run() {
   GLuint TextureID  = glGetUniformLocation(UVprogramID, "myTextureSampler");
 
 	// Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+	glm::mat4 Projection = glm::perspective(glm::radians(50.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 	// Camera matrix
 	glm::mat4 View  = glm::lookAt(
 	  glm::vec3(-0.5,-2,10), // Camera is at (4,3,-3), in World Space
@@ -107,6 +107,22 @@ void run() {
 	glm::mat4 Model      = glm::mat4(1.0f);
 	// Our ModelViewProjection : multiplication of our 3 matrices
 	glm::mat4 MVP        = Projection * View * Model; // Remember, matrix multiplication is the other way around
+
+  GLfloat village_vertex_buffer_data[VILLAGE_LOCATION_AMOUNT * float_per_village];
+  for (int i = 0; i < VILLAGE_LOCATION_AMOUNT; i++) {
+    for (int j = 0; j < float_per_village; j++) {
+      village_vertex_buffer_data[i * float_per_village + j] = village_centers[i * 3 + j % 3] + village_deltas[j];
+    }
+  }
+
+
+  GLfloat village_colour_buffer_data[VILLAGE_LOCATION_AMOUNT * float_per_village];
+  for (int i = 0; i < VILLAGE_LOCATION_AMOUNT; i++) {
+    for (int j = 0; j < float_per_village; j++) {
+      village_colour_buffer_data[i * float_per_village + j] = 0.1f;
+    }
+  }
+
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
   GLfloat g_vertex_buffer_data[TILE_AMOUNT * float_per_tile];
@@ -194,20 +210,31 @@ void run() {
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
-  GLuint uvvertexbuffer;
-	glGenBuffers(1, &uvvertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_vertex_buffer_data), g_uv_vertex_buffer_data, GL_STATIC_DRAW);
-
 	GLuint colorbuffer;
 	glGenBuffers(1, &colorbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
+  GLuint uvvertexbuffer;
+	glGenBuffers(1, &uvvertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_vertex_buffer_data), g_uv_vertex_buffer_data, GL_STATIC_DRAW);
+
   GLuint uvbuffer;
 	glGenBuffers(1, &uvbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+
+  GLuint villagevertexbuffer;
+	glGenBuffers(1, &villagevertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(village_vertex_buffer_data), village_vertex_buffer_data, GL_STATIC_DRAW);
+
+	GLuint villagecolorbuffer;
+	glGenBuffers(1, &villagecolorbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(village_colour_buffer_data), village_colour_buffer_data, GL_STATIC_DRAW);
+
 
   int lastTime = time(0);
   std::cout << "\n";
@@ -279,6 +306,31 @@ void run() {
 			(void*)0                          // array buffer offset
 		);
     glDrawArrays(GL_TRIANGLES, 0, NUMBER_AMOUNT * vertex_per_number);
+
+
+    glUseProgram(programID);
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+    // Vertices
+		glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+    // Colours
+		glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			3,                                // size
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+		glDrawArrays(GL_TRIANGLES, 0, VILLAGE_LOCATION_AMOUNT * float_per_village); // 12*3 indices starting at 0 -> 12 triangles
 
 
 		glDisableVertexAttribArray(0);

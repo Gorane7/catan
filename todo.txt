@@ -1,1 +1,2 @@
 # Replace rand / srand with "modern random facilities": https://en.cppreference.com/w/cpp/numeric/random
+# Figure out how to do polymorphism properly

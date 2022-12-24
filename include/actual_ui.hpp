@@ -8,6 +8,7 @@ static const int float_per_tile = vertex_per_tile * 3;
 static const int vertex_per_number = 6;
 static const int float_per_number = vertex_per_number * 3;
 static const float square_height = 0.01f;
+static const int float_per_village = 12 * 3 * 3;
 
 static const float tile_deltas[18 * 3] = {
   0.0f, 0.0f, 0.0f,     // center
@@ -61,13 +62,115 @@ static const float tile_centers[19 * 3] = {
 };
 
 static const float square_radius = 0.2f;
-static const float square_deltas[6 * 3] {
+static const float square_deltas[6 * 3] = {
   -square_radius, square_radius, 0.0f,
   square_radius, square_radius, 0.0f,
   -square_radius, -square_radius, 0.0f,
   square_radius, -square_radius, 0.0f,
   square_radius, square_radius, 0.0f,
   -square_radius, -square_radius, 0.0f
+};
+
+static const float village_size = 0.15f;
+static const float village_deltas[] = {
+    -village_size, -village_size, 0.0f,
+		-village_size, -village_size, 2 * village_size,
+		-village_size, village_size, 2 * village_size,
+		 village_size, village_size, 0.0f,
+		-village_size, -village_size, 0.0f,
+		-village_size, village_size, 0.0f,
+		 village_size, -village_size, 2 * village_size,
+		-village_size, -village_size, 0.0f,
+		 village_size, -village_size, 0.0f,
+		 village_size, village_size, 0.0f,
+		 village_size, -village_size, 0.0f,
+		-village_size, -village_size, 0.0f,
+		-village_size, -village_size, 0.0f,
+		-village_size, village_size, 2 * village_size,
+		-village_size, village_size, 0.0f,
+		 village_size, -village_size, 2 * village_size,
+		-village_size, -village_size, 2 * village_size,
+		-village_size, -village_size, 0.0f,
+		-village_size, village_size, 2 * village_size,
+		-village_size, -village_size, 2 * village_size,
+		 village_size, -village_size, 2 * village_size,
+		 village_size, village_size, 2 * village_size,
+		 village_size, -village_size, 0.0f,
+		 village_size, village_size, 0.0f,
+		 village_size, -village_size, 0.0f,
+		 village_size, village_size, 2 * village_size,
+		 village_size, -village_size, 2 * village_size,
+		 village_size, village_size, 2 * village_size,
+		 village_size, village_size, 0.0f,
+		-village_size, village_size, 0.0f,
+		 village_size, village_size, 2 * village_size,
+		-village_size, village_size, 0.0f,
+		-village_size, village_size, 2 * village_size,
+		 village_size, village_size, 2 * village_size,
+		-village_size, village_size, 2 * village_size,
+		 village_size, -village_size, 2 * village_size
+};
+
+static const float village_centers[] = {
+  -2.598f, 3.5f, 0.0f,
+  -1.732f, 4.0f, 0.0f,
+  -0.866f, 3.5f, 0.0f,
+  0.0f, 4.0f, 0.0f,
+  0.866f, 3.5f, 0.0f,
+  1.732f, 4.0f, 0.0f,
+  2.598f, 3.5f, 0.0f,
+
+  -3.464f, 2.0f, 0.0f,
+  -2.598f, 2.5f, 0.0f,
+  -1.732f, 2.0f, 0.0f,
+  -0.866f, 2.5f, 0.0f,
+  0.0f, 2.0f, 0.0f,
+  0.866f, 2.5f, 0.0f,
+  1.732f, 2.0f, 0.0f,
+  2.598f, 2.5f, 0.0f,
+  3.464f, 2.0f, 0.0f,
+
+  -4.33f, 0.5, 0.0f,
+  -3.464f, 1.0f, 0.0f,
+  -2.598f, 0.5f, 0.0f,
+  -1.732f, 1.0f, 0.0f,
+  -0.866f, 0.5f, 0.0f,
+  0.0f, 1.0f, 0.0f,
+  0.866f, 0.5f, 0.0f,
+  1.732f, 1.0f, 0.0f,
+  2.598f, 0.5f, 0.0f,
+  3.464f, 1.0f, 0.0f,
+  4.33f, 0.5, 0.0f,
+
+  -4.33f, -0.5, 0.0f,
+  -3.464f, -1.0f, 0.0f,
+  -2.598f, -0.5f, 0.0f,
+  -1.732f, -1.0f, 0.0f,
+  -0.866f, -0.5f, 0.0f,
+  0.0f, -1.0f, 0.0f,
+  0.866f, -0.5f, 0.0f,
+  1.732f, -1.0f, 0.0f,
+  2.598f, -0.5f, 0.0f,
+  3.464f, -1.0f, 0.0f,
+  4.33f, -0.5, 0.0f,
+
+  -3.464f, -2.0f, 0.0f,
+  -2.598f, -2.5f, 0.0f,
+  -1.732f, -2.0f, 0.0f,
+  -0.866f, -2.5f, 0.0f,
+  0.0f, -2.0f, 0.0f,
+  0.866f, -2.5f, 0.0f,
+  1.732f, -2.0f, 0.0f,
+  2.598f, -2.5f, 0.0f,
+  3.464f, -2.0f, 0.0f,
+
+  -2.598f, -3.5f, 0.0f,
+  -1.732f, -4.0f, 0.0f,
+  -0.866f, -3.5f, 0.0f,
+  0.0f, -4.0f, 0.0f,
+  0.866f, -3.5f, 0.0f,
+  1.732f, -4.0f, 0.0f,
+  2.598f, -3.5f, 0.0f,
 };
 
 void run();
