@@ -19,6 +19,7 @@ using namespace glm;
 #include "shader.hpp"
 #include "game.hpp"
 #include "actual_ui.hpp"
+#include "texture.hpp"
 
 void run(GameBoard board) {
   srand (static_cast <unsigned> (time(0)));
@@ -71,10 +72,21 @@ void run(GameBoard board) {
 	glBindVertexArray(VertexArrayID);
 
 	// Create and compile our GLSL program from the shaders
-	GLuint programID = LoadShaders( "TransformVertexShader.vertexshader", "ColorFragmentShader.fragmentshader" );
+	GLuint programID = LoadShaders(
+    "TransformVertexShader.vertexshader",
+    "ColorFragmentShader.fragmentshader"
+  );
+
+  GLuint UVprogramID = LoadShaders(
+    "UVVertexShader.vertexshader",
+    "UVFragmentShader.fragmentshader"
+  );
 
 	// Get a handle for our "MVP" uniform
 	GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+
+  GLuint Texture = loadBMP_custom("numbers.bmp");
+  GLuint TextureID  = glGetUniformLocation(UVprogramID, "myTextureSampler");
 
 	// Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
 	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.0f);
@@ -89,30 +101,26 @@ void run(GameBoard board) {
 	// Our ModelViewProjection : multiplication of our 3 matrices
 	glm::mat4 MVP        = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-
-  int tile_amount = 19;
-  int vertex_per_tile = 18;
-  int float_per_tile = vertex_per_tile * 3;
-  int float_per_number = 6 * 3;
-  float square_height = 0.01f;
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-  GLfloat g_vertex_buffer_data[tile_amount * float_per_tile + tile_amount * float_per_number];
+  GLfloat g_vertex_buffer_data[tile_amount * float_per_tile];
   for (int i = 0; i < tile_amount; i++) {
     for (int j = 0; j < float_per_tile; j++) {
       g_vertex_buffer_data[i * float_per_tile + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
     }
   }
+
+  GLfloat g_uv_vertex_buffer_data[tile_amount * float_per_number];
   for (int i = 0; i < tile_amount; i++) {
     for (int j = 0; j < float_per_number; j++) {
-      g_vertex_buffer_data[tile_amount * float_per_tile + i * float_per_number + j] = tile_centers[i * 3 + j % 3] + square_deltas[j];
+      g_uv_vertex_buffer_data[i * float_per_number + j] = tile_centers[i * 3 + j % 3] + square_deltas[j];
       if (j % 3 == 2) {
-        g_vertex_buffer_data[tile_amount * float_per_tile + i * float_per_number + j] += square_height;
+        g_uv_vertex_buffer_data[i * float_per_number + j] += square_height;
       }
     }
   }
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-	GLfloat g_color_buffer_data[tile_amount * float_per_tile + tile_amount * float_per_number];
+	GLfloat g_color_buffer_data[tile_amount * float_per_tile];
 	for (int v = 0; v < tile_amount ; v++){
     float c1 = tile_colours[board.tiles[v] * 3 + 0];
     float c2 = tile_colours[board.tiles[v] * 3 + 1];
@@ -123,36 +131,79 @@ void run(GameBoard board) {
       g_color_buffer_data[float_per_tile*v+b*3+2] = c3;
     }
 	}
-  for (int i = 0; i < tile_amount * float_per_number; i++) {
+  /*for (int i = 0; i < tile_amount * float_per_number; i++) {
     g_color_buffer_data[tile_amount * float_per_tile + i] = 0.9f;
-  }
+  }*/
+
+  static const float small = 0.0f;
+	static const float large = 0.25f;
+  static const float number_bases[] = {
+    0.5f, 0.25f, // 0
+    0.5f, 0.25f, // 1
+    0.0f, 0.75f, // 2
+    0.25f, 0.75f, // 3
+    0.5f, 0.75f, // 4
+    0.75f, 0.75f, // 5
+    0.0f, 0.5f, // 6
+    0.5f, 0.25f, // 7
+    0.25f, 0.5f, // 8
+    0.5f, 0.5f, // 9
+    0.75f, 0.5f, // 10
+    0.0f, 0.25f, // 11
+    0.25f, 0.25f, // 12
+  };
+	GLfloat g_uv_buffer_data[19 * 6 * 2];
+	for (int i = 0; i < 19; i++) {
+    int number = numberAtTile(board, i);
+    float basex = number_bases[number * 2 + 0];
+    float basey = number_bases[number * 2 + 1];
+		g_uv_buffer_data[i * 12 + 0] = basex + small;
+		g_uv_buffer_data[i * 12 + 1] = basey + large;
+
+		g_uv_buffer_data[i * 12 + 2] = basex + large;
+		g_uv_buffer_data[i * 12 + 3] = basey + large;
+
+		g_uv_buffer_data[i * 12 + 4] = basex + small;
+		g_uv_buffer_data[i * 12 + 5] = basey + small;
+
+    g_uv_buffer_data[i * 12 + 6] = basex + large;
+		g_uv_buffer_data[i * 12 + 7] = basey + small;
+
+		g_uv_buffer_data[i * 12 + 8] = basex + large;
+		g_uv_buffer_data[i * 12 + 9] = basey + large;
+
+		g_uv_buffer_data[i * 12 + 10] = basex + small;
+		g_uv_buffer_data[i * 12 + 11] = basey + small;
+	}
 
 	GLuint vertexbuffer;
 	glGenBuffers(1, &vertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+  GLuint uvvertexbuffer;
+	glGenBuffers(1, &uvvertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_vertex_buffer_data), g_uv_vertex_buffer_data, GL_STATIC_DRAW);
+
 	GLuint colorbuffer;
 	glGenBuffers(1, &colorbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
-	do{
+  GLuint uvbuffer;
+	glGenBuffers(1, &uvbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
 
-    /*for (int v = 0; v < 1 ; v++){
-      float c1 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-      float c2 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-      float c3 = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-      for (int b = 0; b < 18; b++) {
-        g_color_buffer_data[18*v+b*3+0] = (g_color_buffer_data[18*v+b*3+0] * 9 + c1) / 10;
-        g_color_buffer_data[18*v+b*3+1] = (g_color_buffer_data[18*v+b*3+1] * 9 + c2) / 10;
-        g_color_buffer_data[18*v+b*3+2] = (g_color_buffer_data[18*v+b*3+2] * 9 + c3) / 10;
-      }
-  	}*/
-		glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+	do{
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
 
 		// Use our shader
 		glUseProgram(programID);
@@ -161,8 +212,9 @@ void run(GameBoard board) {
 		// in the "MVP" uniform
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
 
-		// 1rst attribute buffer : vertices
-		glEnableVertexAttribArray(0);
+		// 1st attribute buffer : vertices
+
+
 		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
@@ -174,7 +226,7 @@ void run(GameBoard board) {
 		);
 
 		// 2nd attribute buffer : colors
-		glEnableVertexAttribArray(1);
+
 		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
@@ -186,7 +238,35 @@ void run(GameBoard board) {
 		);
 
 		// Draw the triangle !
-		glDrawArrays(GL_TRIANGLES, 0, tile_amount * float_per_tile); // 12*3 indices starting at 0 -> 12 triangles
+		glDrawArrays(GL_TRIANGLES, 0, tile_amount * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
+
+
+		glUseProgram(UVprogramID);
+		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, Texture);
+		glUniform1i(TextureID, 0);
+
+		glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
+		glVertexAttribPointer(
+			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+			3,                  // size
+			GL_FLOAT,           // type
+			GL_FALSE,           // normalized?
+			0,                  // stride
+			(void*)0            // array buffer offset
+		);
+		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glVertexAttribPointer(
+			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+			2,                                // size : U+V => 2
+			GL_FLOAT,                         // type
+			GL_FALSE,                         // normalized?
+			0,                                // stride
+			(void*)0                          // array buffer offset
+		);
+    glDrawArrays(GL_TRIANGLES, 0, tile_amount * vertex_per_number);
 
 		glDisableVertexAttribArray(0);
 		glDisableVertexAttribArray(1);
@@ -201,6 +281,7 @@ void run(GameBoard board) {
 	// Cleanup VBO and shader
 	glDeleteBuffers(1, &vertexbuffer);
 	glDeleteBuffers(1, &colorbuffer);
+  glDeleteBuffers(1, &uvbuffer);
 	glDeleteProgram(programID);
 	glDeleteVertexArrays(1, &VertexArrayID);
 

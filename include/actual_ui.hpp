@@ -3,6 +3,13 @@
 
 #include "game.hpp"
 
+static const int tile_amount = 19;
+static const int vertex_per_tile = 18;
+static const int float_per_tile = vertex_per_tile * 3;
+static const int vertex_per_number = 6;
+static const int float_per_number = vertex_per_number * 3;
+static const float square_height = 0.01f;
+
 static const float tile_deltas[18 * 3] = {
   0.0f, 0.0f, 0.0f,     // center
   -0.866f, 0.5f, 0.0f,  // left top

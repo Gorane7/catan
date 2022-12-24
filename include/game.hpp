@@ -51,6 +51,7 @@ struct GameBoard {
   int robberLocation;
 };
 
+int numberAtTile(GameBoard, int);
 GameBoard randomBoard();
 GameBoard randomBoard(bool);
 
