@@ -26,6 +26,15 @@ using namespace glm;
 #include "randomAI.hpp"
 #include "terminal_ui.hpp"
 
+
+GLuint generateBuffer(GLfloat bufferData[], int size) {
+  GLuint buffer;
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, size, bufferData, GL_STATIC_DRAW);
+  return buffer;
+}
+
 void run() {
   int playerAmount = 4;
   Game game = createGame(playerAmount);
@@ -231,36 +240,12 @@ void run() {
 		number_colour_buffer_data[i * 12 + 10] = basex + small;
 		number_colour_buffer_data[i * 12 + 11] = basey + small;
 	}
-
-	GLuint tilevertexbuffer;
-	glGenBuffers(1, &tilevertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, tilevertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tile_vertex_buffer_data), tile_vertex_buffer_data, GL_STATIC_DRAW);
-
-	GLuint tilecolourbuffer;
-	glGenBuffers(1, &tilecolourbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, tilecolourbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(tile_colour_buffer_data), tile_colour_buffer_data, GL_STATIC_DRAW);
-
-  GLuint uvvertexbuffer;
-	glGenBuffers(1, &uvvertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(number_vertex_buffer_data), number_vertex_buffer_data, GL_STATIC_DRAW);
-
-  GLuint uvcolourbuffer;
-	glGenBuffers(1, &uvcolourbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvcolourbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(number_colour_buffer_data), number_colour_buffer_data, GL_STATIC_DRAW);
-
-  GLuint villagevertexbuffer;
-	glGenBuffers(1, &villagevertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(village_vertex_buffer_data), village_vertex_buffer_data, GL_STATIC_DRAW);
-
-	GLuint villagecolourbuffer;
-	glGenBuffers(1, &villagecolourbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, villagecolourbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(village_colour_buffer_data), village_colour_buffer_data, GL_STATIC_DRAW);
+  GLuint tileVertexBuffer = generateBuffer(tile_vertex_buffer_data, sizeof(tile_vertex_buffer_data));
+  GLuint tileColourBuffer = generateBuffer(tile_colour_buffer_data, sizeof(tile_colour_buffer_data));
+  GLuint numberVertexBuffer = generateBuffer(number_vertex_buffer_data, sizeof(number_vertex_buffer_data));
+  GLuint numberColourBuffer = generateBuffer(number_colour_buffer_data, sizeof(number_colour_buffer_data));
+  GLuint villageVertexBuffer = generateBuffer(village_vertex_buffer_data, sizeof(village_vertex_buffer_data));
+  GLuint villageColourBuffer = generateBuffer(village_colour_buffer_data, sizeof(village_colour_buffer_data));
 
   glfwSwapInterval(0);
 
@@ -286,7 +271,7 @@ void run() {
 		glUseProgram(programID);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
     // Vertices
-		glBindBuffer(GL_ARRAY_BUFFER, tilevertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, tileVertexBuffer);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
@@ -296,7 +281,7 @@ void run() {
 			(void*)0            // array buffer offset
 		);
     // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, tilecolourbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, tileColourBuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
 			3,                                // size
@@ -315,7 +300,7 @@ void run() {
 		glBindTexture(GL_TEXTURE_2D, Texture);
 		glUniform1i(TextureID, 0);
     // Vertices
-		glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, numberVertexBuffer);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
@@ -325,7 +310,7 @@ void run() {
 			(void*)0            // array buffer offset
 		);
     // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, uvcolourbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, numberColourBuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
 			2,                                // size : U+V => 2
@@ -338,7 +323,7 @@ void run() {
 
 
     // Vertices
-    glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, villageVertexBuffer);
     glVertexAttribPointer(
       0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
       3,                  // size
@@ -348,7 +333,7 @@ void run() {
       (void*)0            // array buffer offset
     );
     // Colours
-    glBindBuffer(GL_ARRAY_BUFFER, villagecolourbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, villageColourBuffer);
     glVertexAttribPointer(
       1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
       3,                                // size
@@ -386,13 +371,13 @@ void run() {
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
 
 	// Cleanup VBO and shader
-	glDeleteBuffers(1, &tilevertexbuffer);
-	glDeleteBuffers(1, &tilecolourbuffer);
-  glDeleteBuffers(1, &uvcolourbuffer);
+	glDeleteBuffers(1, &tileVertexBuffer);
+	glDeleteBuffers(1, &tileColourBuffer);
+  glDeleteBuffers(1, &numberColourBuffer);
 
-  glDeleteBuffers(1, &uvvertexbuffer);
-  glDeleteBuffers(1, &villagevertexbuffer);
-  glDeleteBuffers(1, &villagecolourbuffer);
+  glDeleteBuffers(1, &numberVertexBuffer);
+  glDeleteBuffers(1, &villageVertexBuffer);
+  glDeleteBuffers(1, &villageColourBuffer);
 
 	glDeleteProgram(programID);
 	glDeleteVertexArrays(1, &VertexArrayID);
