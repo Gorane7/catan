@@ -15,6 +15,7 @@ GLFWwindow* window;
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/transform.hpp>
 using namespace glm;
 
 #include "shader.hpp"
@@ -108,18 +109,19 @@ void run() {
 	// Our ModelViewProjection : multiplication of our 3 matrices
 	glm::mat4 MVP        = Projection * View * Model; // Remember, matrix multiplication is the other way around
 
-  GLfloat village_vertex_buffer_data[VILLAGE_LOCATION_AMOUNT * float_per_village];
-  for (int i = 0; i < VILLAGE_LOCATION_AMOUNT; i++) {
+  GLfloat village_vertex_buffer_data[MAX_PLAYERS * float_per_village];
+  for (int i = 0; i < MAX_PLAYERS; i++) {
     for (int j = 0; j < float_per_village; j++) {
-      village_vertex_buffer_data[i * float_per_village + j] = village_centers[i * 3 + j % 3] + village_deltas[j];
+      village_vertex_buffer_data[i * float_per_village + j] = village_deltas[j];
     }
   }
 
 
-  GLfloat village_colour_buffer_data[VILLAGE_LOCATION_AMOUNT * float_per_village];
-  for (int i = 0; i < VILLAGE_LOCATION_AMOUNT; i++) {
+  GLfloat village_colour_buffer_data[MAX_PLAYERS * float_per_village];
+  for (int i = 0; i < MAX_PLAYERS; i++) {
     for (int j = 0; j < float_per_village; j++) {
-      village_colour_buffer_data[i * float_per_village + j] = 0.1f;
+      village_colour_buffer_data[i * float_per_village + j] = player_colours[i * 3 + j % 3];
+      //std::cout << village_colour_buffer_data[i * float_per_village + j] << "\n";
     }
   }
 
@@ -308,29 +310,43 @@ void run() {
     glDrawArrays(GL_TRIANGLES, 0, NUMBER_AMOUNT * vertex_per_number);
 
 
-    glUseProgram(programID);
-		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
     // Vertices
-		glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
-		glVertexAttribPointer(
-			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
+    glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
+    glVertexAttribPointer(
+      0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+      3,                  // size
+      GL_FLOAT,           // type
+      GL_FALSE,           // normalized?
+      0,                  // stride
+      (void*)0            // array buffer offset
+    );
     // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-		glDrawArrays(GL_TRIANGLES, 0, VILLAGE_LOCATION_AMOUNT * float_per_village); // 12*3 indices starting at 0 -> 12 triangles
+    glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
+    glVertexAttribPointer(
+      1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+      3,                                // size
+      GL_FLOAT,                         // type
+      GL_FALSE,                         // normalized?
+      0,                                // stride
+      (void*)0                          // array buffer offset
+    );
+    for (int i = 0; i < VILLAGE_LOCATION_AMOUNT; i++) {
+      if (game.board.villages[i] == -1) {
+        continue;
+      }
+      //glm::mat4 modelVillage = glm::translate(glm::mat4(), glm::vec3(village_centers[i * 3], village_centers[i * 3 + 1], village_centers[i * 3 + 2]));
+      glm::mat4 modelVillage = glm::mat4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        village_centers[i * 3], village_centers[i * 3 + 1], village_centers[i * 3 + 2], 1.0f
+      );
+      glm::mat4 thisVillage = Projection * View * modelVillage; // Remember, matrix multiplication is the other way around
+      glUseProgram(programID);
+      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
+
+  		glDrawArrays(GL_TRIANGLES, game.board.villages[i] * vertex_per_village, vertex_per_village); // 12*3 indices starting at 0 -> 12 triangles
+    }
 
 
 		glDisableVertexAttribArray(0);
