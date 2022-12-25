@@ -134,7 +134,7 @@ void run() {
 
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-  GLfloat g_vertex_buffer_data[TILE_AMOUNT * float_per_tile];
+  GLfloat tile_vertex_buffer_data[TILE_AMOUNT * float_per_tile];
   int c = 0;
   for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
     if (!isValidTile(i)) {
@@ -145,26 +145,26 @@ void run() {
     float d[3] = {1.732f * x + 0.866f * y, 1.5f * y, 0.0f};
     for (int j = 0; j < vertex_per_tile; j++) {
       for (int k = 0; k < 3; k++) {
-        g_vertex_buffer_data[c * float_per_tile + j * 3 + k] = d[k] + tile_deltas[j * 3 + k];
+        tile_vertex_buffer_data[c * float_per_tile + j * 3 + k] = d[k] + tile_deltas[j * 3 + k];
       }
     }
     c++;
   }
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
-	GLfloat g_color_buffer_data[TILE_AMOUNT * float_per_tile];
+	GLfloat tile_colour_buffer_data[TILE_AMOUNT * float_per_tile];
 	for (int v = 0; v < TILE_AMOUNT ; v++){
     float c1 = tile_colours[game.board.abstractTiles[v] * 3 + 0];
     float c2 = tile_colours[game.board.abstractTiles[v] * 3 + 1];
     float c3 = tile_colours[game.board.abstractTiles[v] * 3 + 2];
     for (int b = 0; b < vertex_per_tile; b++) {
-      g_color_buffer_data[float_per_tile*v+b*3+0] = c1;
-      g_color_buffer_data[float_per_tile*v+b*3+1] = c2;
-      g_color_buffer_data[float_per_tile*v+b*3+2] = c3;
+      tile_colour_buffer_data[float_per_tile*v+b*3+0] = c1;
+      tile_colour_buffer_data[float_per_tile*v+b*3+1] = c2;
+      tile_colour_buffer_data[float_per_tile*v+b*3+2] = c3;
     }
 	}
   /*for (int i = 0; i < TILE_AMOUNT * float_per_number; i++) {
-    g_color_buffer_data[TILE_AMOUNT * float_per_tile + i] = 0.9f;
+    tile_colour_buffer_data[TILE_AMOUNT * float_per_tile + i] = 0.9f;
   }*/
 
   static const float small = 0.0f;
@@ -185,7 +185,7 @@ void run() {
     0.25f, 0.25f, // 12
   };
 
-  GLfloat g_uv_vertex_buffer_data[NUMBER_AMOUNT * float_per_number];
+  GLfloat number_vertex_buffer_data[NUMBER_AMOUNT * float_per_number];
   int desertsFound = 0;
   c = 0;
   for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
@@ -201,65 +201,65 @@ void run() {
     float d[3] = {1.732f * x + 0.866f * y, 1.5f * y, 0.0f};
     for (int j = 0; j < vertex_per_number; j++) {
       for (int k = 0; k < 3; k++) {
-        g_uv_vertex_buffer_data[c * float_per_number + j * 3 + k] = d[k] + square_deltas[j * 3 + k];
+        number_vertex_buffer_data[c * float_per_number + j * 3 + k] = d[k] + square_deltas[j * 3 + k];
       }
-      g_uv_vertex_buffer_data[c * float_per_number + j * 3 + 2] += square_height;
+      number_vertex_buffer_data[c * float_per_number + j * 3 + 2] += square_height;
     }
     c++;
   }
 
-	GLfloat g_uv_buffer_data[NUMBER_AMOUNT * 6 * 2];
+	GLfloat number_colour_buffer_data[NUMBER_AMOUNT * 6 * 2];
 	for (int i = 0; i < NUMBER_AMOUNT; i++) {
     int number = game.board.numbers[i];
     float basex = number_bases[number * 2 + 0];
     float basey = number_bases[number * 2 + 1];
-		g_uv_buffer_data[i * 12 + 0] = basex + small;
-		g_uv_buffer_data[i * 12 + 1] = basey + large;
+		number_colour_buffer_data[i * 12 + 0] = basex + small;
+		number_colour_buffer_data[i * 12 + 1] = basey + large;
 
-		g_uv_buffer_data[i * 12 + 2] = basex + large;
-		g_uv_buffer_data[i * 12 + 3] = basey + large;
+		number_colour_buffer_data[i * 12 + 2] = basex + large;
+		number_colour_buffer_data[i * 12 + 3] = basey + large;
 
-		g_uv_buffer_data[i * 12 + 4] = basex + small;
-		g_uv_buffer_data[i * 12 + 5] = basey + small;
+		number_colour_buffer_data[i * 12 + 4] = basex + small;
+		number_colour_buffer_data[i * 12 + 5] = basey + small;
 
-    g_uv_buffer_data[i * 12 + 6] = basex + large;
-		g_uv_buffer_data[i * 12 + 7] = basey + small;
+    number_colour_buffer_data[i * 12 + 6] = basex + large;
+		number_colour_buffer_data[i * 12 + 7] = basey + small;
 
-		g_uv_buffer_data[i * 12 + 8] = basex + large;
-		g_uv_buffer_data[i * 12 + 9] = basey + large;
+		number_colour_buffer_data[i * 12 + 8] = basex + large;
+		number_colour_buffer_data[i * 12 + 9] = basey + large;
 
-		g_uv_buffer_data[i * 12 + 10] = basex + small;
-		g_uv_buffer_data[i * 12 + 11] = basey + small;
+		number_colour_buffer_data[i * 12 + 10] = basex + small;
+		number_colour_buffer_data[i * 12 + 11] = basey + small;
 	}
 
-	GLuint vertexbuffer;
-	glGenBuffers(1, &vertexbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	GLuint tilevertexbuffer;
+	glGenBuffers(1, &tilevertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, tilevertexbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tile_vertex_buffer_data), tile_vertex_buffer_data, GL_STATIC_DRAW);
 
-	GLuint colorbuffer;
-	glGenBuffers(1, &colorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+	GLuint tilecolourbuffer;
+	glGenBuffers(1, &tilecolourbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, tilecolourbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(tile_colour_buffer_data), tile_colour_buffer_data, GL_STATIC_DRAW);
 
   GLuint uvvertexbuffer;
 	glGenBuffers(1, &uvvertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, uvvertexbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_vertex_buffer_data), g_uv_vertex_buffer_data, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(number_vertex_buffer_data), number_vertex_buffer_data, GL_STATIC_DRAW);
 
-  GLuint uvbuffer;
-	glGenBuffers(1, &uvbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_uv_buffer_data), g_uv_buffer_data, GL_STATIC_DRAW);
+  GLuint uvcolourbuffer;
+	glGenBuffers(1, &uvcolourbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, uvcolourbuffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(number_colour_buffer_data), number_colour_buffer_data, GL_STATIC_DRAW);
 
   GLuint villagevertexbuffer;
 	glGenBuffers(1, &villagevertexbuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, villagevertexbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(village_vertex_buffer_data), village_vertex_buffer_data, GL_STATIC_DRAW);
 
-	GLuint villagecolorbuffer;
-	glGenBuffers(1, &villagecolorbuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
+	GLuint villagecolourbuffer;
+	glGenBuffers(1, &villagecolourbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, villagecolourbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(village_colour_buffer_data), village_colour_buffer_data, GL_STATIC_DRAW);
 
   glfwSwapInterval(0);
@@ -286,7 +286,7 @@ void run() {
 		glUseProgram(programID);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
     // Vertices
-		glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, tilevertexbuffer);
 		glVertexAttribPointer(
 			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
 			3,                  // size
@@ -296,7 +296,7 @@ void run() {
 			(void*)0            // array buffer offset
 		);
     // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, colorbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, tilecolourbuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
 			3,                                // size
@@ -306,7 +306,6 @@ void run() {
 			(void*)0                          // array buffer offset
 		);
 		glDrawArrays(GL_TRIANGLES, 0, TILE_AMOUNT * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
-
 
 
 		glUseProgram(UVprogramID);
@@ -326,7 +325,7 @@ void run() {
 			(void*)0            // array buffer offset
 		);
     // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, uvcolourbuffer);
 		glVertexAttribPointer(
 			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
 			2,                                // size : U+V => 2
@@ -349,7 +348,7 @@ void run() {
       (void*)0            // array buffer offset
     );
     // Colours
-    glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, villagecolourbuffer);
     glVertexAttribPointer(
       1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
       3,                                // size
@@ -387,9 +386,14 @@ void run() {
 	while( glfwGetKey(window, GLFW_KEY_ESCAPE ) != GLFW_PRESS && glfwWindowShouldClose(window) == 0 );
 
 	// Cleanup VBO and shader
-	glDeleteBuffers(1, &vertexbuffer);
-	glDeleteBuffers(1, &colorbuffer);
-  glDeleteBuffers(1, &uvbuffer);
+	glDeleteBuffers(1, &tilevertexbuffer);
+	glDeleteBuffers(1, &tilecolourbuffer);
+  glDeleteBuffers(1, &uvcolourbuffer);
+
+  glDeleteBuffers(1, &uvvertexbuffer);
+  glDeleteBuffers(1, &villagevertexbuffer);
+  glDeleteBuffers(1, &villagecolourbuffer);
+
 	glDeleteProgram(programID);
 	glDeleteVertexArrays(1, &VertexArrayID);
 
