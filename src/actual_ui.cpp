@@ -30,6 +30,13 @@ void run() {
   int playerAmount = 4;
   Game game = createGame(playerAmount);
 
+  float tile_deltas[6 * 3 * 3];
+  for (int i = 0; i < 6 * 3; i++) {
+    tile_deltas[i * 3 + 0] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 0];
+    tile_deltas[i * 3 + 1] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 1];
+    tile_deltas[i * 3 + 2] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 2];
+  }
+
   srand (static_cast <unsigned> (time(0)));
 	// Initialise GLFW
 	if( !glfwInit() )

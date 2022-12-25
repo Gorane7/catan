@@ -12,26 +12,25 @@ static const int vertex_per_village = 12 * 3;
 static const int float_per_village = vertex_per_village * 3;
 static const float hex_edge_length = 1.0f;
 
-static const float tile_deltas[18 * 3] = {
+static const float tile_delta_vertice_coordinates[7 * 3] = {
   0.0f, 0.0f, 0.0f,     // center
   -0.866f, 0.5f, 0.0f,  // left top
   0.0f, 1.0f, 0.0f,     // top
-  0.0f, 0.0f, 0.0f,     // center
-  0.0f, 1.0f, 0.0f,     // top
-  0.866f, 0.5f, 0.0f,  // right top
-  0.0f, 0.0f, 0.0f,     // center
   0.866f, 0.5f, 0.0f,  // right top
   0.866f, -0.5f, 0.0f,  // right bottom
-  0.0f, 0.0f, 0.0f,     // center
-  0.866f, -0.5f, 0.0f,  // right bottom
   0.0f, -1.0f, 0.0f,     // bottom
-  0.0f, 0.0f, 0.0f,     // center
-  0.0f, -1.0f, 0.0f,     // bottom
-  -0.866f, -0.5f, 0.0f,  // left bottom
-  0.0f, 0.0f, 0.0f,     // center
-  -0.866f, -0.5f, 0.0f,  // left bottom
-  -0.866f, 0.5f, 0.0f,  // left top
+  -0.866f, -0.5f, 0.0f  // left bottom
 };
+
+static const int tile_delta_vertices[6 * 3] = {
+  0, 1, 2,
+  0, 2, 3,
+  0, 3, 4,
+  0, 4, 5,
+  0, 5, 6,
+  0, 6, 1
+};
+
 static const float tile_colours[6 * 3] = {
   1.0f, 1.0f, 0.5f,
   0.1f, 0.5f, 0.1f,
