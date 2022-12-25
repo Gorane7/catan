@@ -237,17 +237,21 @@ void run() {
 	glBindBuffer(GL_ARRAY_BUFFER, villagecolorbuffer);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(village_colour_buffer_data), village_colour_buffer_data, GL_STATIC_DRAW);
 
+  glfwSwapInterval(0);
+
 
   int lastTime = time(0);
+  int framesSinceLast = 0;
   std::cout << "\n";
 	do{
     int thisTime = time(0);
     if (thisTime - lastTime) {
       askAction(game);
       lastTime = thisTime;
-
+      std::cout << framesSinceLast << " frames per second\n";
+      framesSinceLast = 0;
     }
-		// glBufferData(GL_ARRAY_BUFFER, sizeof(g_color_buffer_data), g_color_buffer_data, GL_STATIC_DRAW);
+    framesSinceLast++;
 
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -282,7 +286,6 @@ void run() {
 
 		glUseProgram(UVprogramID);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-
     // Additional stuff for textures
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture);
