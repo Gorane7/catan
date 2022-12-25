@@ -8,6 +8,25 @@ GameBoard randomBoard(int playerAmount) {
   return randomBoard(playerAmount, false);
 }
 
+bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) {
+  std::cout << "Was asked if " << villageLocation << " is a valid location for player " << playerID << "\n";
+  if (board.villages[villageLocation] != -1) {
+    std::cout << "There is already a village from player " << board.villages[villageLocation] << " there\n";
+    return false;
+  }
+  for (int i = 0; i < 3; i++) {
+    if (NEIGHBOUR_VILLAGES[villageLocation * 3 + i] == -1) {
+      break;
+    }
+    if (board.villages[NEIGHBOUR_VILLAGES[villageLocation * 3 + i]] != -1) {
+      std::cout << "There is already a village from player " << board.villages[NEIGHBOUR_VILLAGES[villageLocation * 3 + i]] << " in neighbouring location: " << NEIGHBOUR_VILLAGES[villageLocation * 3 + i] << "\n";
+      return false;
+    }
+  }
+  std::cout << "Let's hope so\n";
+  return true;
+}
+
 int numberAtTile(GameBoard board, int tile) {
   if (board.tiles[tile] == DESERT) {
     return -1;
@@ -82,10 +101,10 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
         continue;
       }
       for (int j = 0; j < 6; j++) {
-        if (NEIGHBOURS[i * 6 + j] == -1) {
+        if (NEIGHBOUR_TILES[i * 6 + j] == -1) {
           continue;
         }
-        int otherNumber = numberAtTile(board, NEIGHBOURS[i * 6 + j]);
+        int otherNumber = numberAtTile(board, NEIGHBOUR_TILES[i * 6 + j]);
         if (otherNumber == 6 || otherNumber == 8) {
           sixOrEightNeighbours = true;
           break;

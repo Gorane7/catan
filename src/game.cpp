@@ -28,7 +28,11 @@ void askAction(Game& game) {
   int preVillageAmount = game.board.villageAmount;
 
   if (preVillageAmount < 2 * game.playerAmount) {
-    int villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
+    int villageLocation;
+    do {
+      villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
+    }
+    while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
     game.board.villages[villageLocation] = game.currentTurn;
     //std::cout << "Player " << game.currentTurn << " placing village\n";
     game.board.villageAmount++;
