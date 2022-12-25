@@ -128,18 +128,28 @@ void run() {
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
   GLfloat g_vertex_buffer_data[TILE_AMOUNT * float_per_tile];
-  for (int i = 0; i < TILE_AMOUNT; i++) {
-    for (int j = 0; j < float_per_tile; j++) {
-      g_vertex_buffer_data[i * float_per_tile + j] = tile_centers[i * 3 + j % 3] + tile_deltas[j];
+  int c = 0;
+  for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
+    if (!isValidTile(i)) {
+      continue;
     }
+    int x = i % MAP_WIDTH - MAP_RADIUS;
+    int y = i / MAP_WIDTH - MAP_RADIUS;
+    float d[3] = {1.732f * x + 0.866f * y, 1.5f * y, 0.0f};
+    for (int j = 0; j < vertex_per_tile; j++) {
+      for (int k = 0; k < 3; k++) {
+        g_vertex_buffer_data[c * float_per_tile + j * 3 + k] = d[k] + tile_deltas[j * 3 + k];
+      }
+    }
+    c++;
   }
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
 	GLfloat g_color_buffer_data[TILE_AMOUNT * float_per_tile];
 	for (int v = 0; v < TILE_AMOUNT ; v++){
-    float c1 = tile_colours[game.board.tiles[v] * 3 + 0];
-    float c2 = tile_colours[game.board.tiles[v] * 3 + 1];
-    float c3 = tile_colours[game.board.tiles[v] * 3 + 2];
+    float c1 = tile_colours[game.board.abstractTiles[v] * 3 + 0];
+    float c2 = tile_colours[game.board.abstractTiles[v] * 3 + 1];
+    float c3 = tile_colours[game.board.abstractTiles[v] * 3 + 2];
     for (int b = 0; b < vertex_per_tile; b++) {
       g_color_buffer_data[float_per_tile*v+b*3+0] = c1;
       g_color_buffer_data[float_per_tile*v+b*3+1] = c2;
@@ -170,17 +180,25 @@ void run() {
 
   GLfloat g_uv_vertex_buffer_data[NUMBER_AMOUNT * float_per_number];
   int desertsFound = 0;
-  for (int i = 0; i < TILE_AMOUNT; i++) {
-    if (game.board.tiles[i] == DESERT) {
+  c = 0;
+  for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
+    if (!isValidTile(i)) {
+      continue;
+    }
+    if (game.board.abstractTiles[c + desertsFound] == DESERT) {
       desertsFound++;
       continue;
     }
-    for (int j = 0; j < float_per_number; j++) {
-      g_uv_vertex_buffer_data[(i - desertsFound) * float_per_number + j] = tile_centers[i * 3 + j % 3] + square_deltas[j];
-      if (j % 3 == 2) {
-        g_uv_vertex_buffer_data[(i - desertsFound) * float_per_number + j] += square_height;
+    int x = i % MAP_WIDTH - MAP_RADIUS;
+    int y = i / MAP_WIDTH - MAP_RADIUS;
+    float d[3] = {1.732f * x + 0.866f * y, 1.5f * y, 0.0f};
+    for (int j = 0; j < vertex_per_number; j++) {
+      for (int k = 0; k < 3; k++) {
+        g_uv_vertex_buffer_data[c * float_per_number + j * 3 + k] = d[k] + square_deltas[j * 3 + k];
       }
+      g_uv_vertex_buffer_data[c * float_per_number + j * 3 + 2] += square_height;
     }
+    c++;
   }
 
 	GLfloat g_uv_buffer_data[NUMBER_AMOUNT * 6 * 2];

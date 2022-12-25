@@ -10,6 +10,7 @@ static const int float_per_number = vertex_per_number * 3;
 static const float square_height = 0.01f;
 static const int vertex_per_village = 12 * 3;
 static const int float_per_village = vertex_per_village * 3;
+static const float hex_edge_length = 1.0f;
 
 static const float tile_deltas[18 * 3] = {
   0.0f, 0.0f, 0.0f,     // center
@@ -38,28 +39,6 @@ static const float tile_colours[6 * 3] = {
   0.9f, 0.9f, 0.1f,
   0.7f, 0.7f, 0.7f,
   0.5f, 0.2f, 0.2f
-};
-
-static const float tile_centers[19 * 3] = {
-  -1.732f, 3.0f, 0.0f,
-  0.0f, 3.0f, 0.0f,
-  1.732f, 3.0f, 0.0f,
-  -2.598f, 1.5f, 0.0f,
-  -0.866f, 1.5f, 0.0f,
-  0.866f, 1.5f, 0.0f,
-  2.598f, 1.5f, 0.0f,
-  -3.464f, 0.0f, 0.0f,
-  -1.732f, 0.0f, 0.0f,
-  0.0f, 0.0f, 0.0f,
-  1.732f, 0.0f, 0.0f,
-  3.464f, 0.0f, 0.0f,
-  -2.598f, -1.5f, 0.0f,
-  -0.866f, -1.5f, 0.0f,
-  0.866f, -1.5f, 0.0f,
-  2.598f, -1.5f, 0.0f,
-  -1.732f, -3.0f, 0.0f,
-  0.0f, -3.0f, 0.0f,
-  1.732f, -3.0f, 0.0f
 };
 
 static const float square_radius = 0.2f;

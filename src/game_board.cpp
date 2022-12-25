@@ -28,16 +28,22 @@ bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) 
 }
 
 int numberAtTile(GameBoard board, int tile) {
-  if (board.tiles[tile] == DESERT) {
+  if (board.abstractTiles[tile] == DESERT) {
     return -1;
   }
   int desertsFound = 0;
   for (int i = 0; i < tile; i++) {
-    if (board.tiles[i] == DESERT) {
+    if (board.abstractTiles[i] == DESERT) {
       desertsFound += 1;
     }
   }
   return board.numbers[tile - desertsFound];
+}
+
+bool isValidTile(int i) {
+  int x = i % MAP_WIDTH - MAP_RADIUS;
+  int y = i / MAP_WIDTH - MAP_RADIUS;
+  return !(x + y > MAP_RADIUS || x + y < - MAP_RADIUS);
 }
 
 GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
@@ -54,23 +60,23 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
   int i = 0;
   for (int j = 0; j < TILE_TYPE_AMOUNT; j++) {
     for (int k = 0; k < TILE_AMOUNTS[j]; k++) {
-      board.tiles[i] = j;
+      board.abstractTiles[i] = j;
       i++;
     }
   }
   // Shuffle tile array
   for (int i = TILE_AMOUNT - 1; i >= 0; i--) {
     int takeFrom = rand() % (i + 1);
-    int temp = board.tiles[takeFrom];
-    board.tiles[takeFrom] = board.tiles[i];
-    board.tiles[i] = temp;
+    int temp = board.abstractTiles[takeFrom];
+    board.abstractTiles[takeFrom] = board.abstractTiles[i];
+    board.abstractTiles[i] = temp;
   }
   // Find desert and therefore robber location
   for (int i = 0; i < TILE_AMOUNT; i++) {
-    if (board.tiles[i] == DESERT) {
+    if (board.abstractTiles[i] == DESERT) {
       if (numbersAreIndex) {
-        board.tiles[i] = board.tiles[18];
-        board.tiles[18] = DESERT;
+        board.abstractTiles[i] = board.abstractTiles[18];
+        board.abstractTiles[18] = DESERT;
       }
       board.robberLocation = i;
       break;
@@ -118,6 +124,16 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
     board.robberLocation = 18;
     for (int i = 0; i < NUMBER_AMOUNT; i++) {
       board.numbers[i] = i;
+    }
+  }
+
+  int c = 0;
+  for (int i = 0; i < MAP_RADIUS * MAP_RADIUS; i++) {
+    if (isValidTile(i)) {
+      board.tiles[i] = board.abstractTiles[c];
+      c++;
+    } else {
+      board.tiles[i] = -1;
     }
   }
   return board;

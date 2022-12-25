@@ -3,6 +3,8 @@
 
 #include <string>
 
+const int MAP_RADIUS = 2;
+const int MAP_WIDTH = MAP_RADIUS * 2 + 1;
 const int TILE_AMOUNT = 19;
 const int FOREST_AMOUNT = 4;
 const int PASTURE_AMOUNT = 4;
@@ -105,7 +107,8 @@ const int MOUNTAIN = 4;
 const int QUARRY = 5;
 
 struct GameBoard {
-  int tiles[TILE_AMOUNT];
+  int abstractTiles[TILE_AMOUNT];
+  int tiles[MAP_WIDTH * MAP_WIDTH];
   int numbers[NUMBER_AMOUNT];
   int robberLocation;
   int villages[VILLAGE_LOCATION_AMOUNT];
@@ -117,5 +120,6 @@ int numberAtTile(GameBoard, int);
 GameBoard randomBoard(int);
 GameBoard randomBoard(int, bool);
 bool isValidVillageLocation(GameBoard, int, int);
+bool isValidTile(int);
 
 #endif

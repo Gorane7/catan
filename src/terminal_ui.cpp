@@ -7,7 +7,7 @@ void displayBoardInfo(GameBoard board) {
   std::cout << "Tiles on board: \n";
   int desertsFound = 0;
   for (int i = 0; i < TILE_AMOUNT; i++) {
-    int tile = board.tiles[i];
+    int tile = board.abstractTiles[i];
 
     std::string numberPart;
     if (tile == DESERT) {
@@ -33,11 +33,11 @@ std::string getDisplayAtLocation(GameBoard board, int location) {
   if (board.robberLocation == location) {
     return " R ";
   }
-  if (board.tiles[location] == DESERT) {
+  if (board.abstractTiles[location] == DESERT) {
     return "   ";
   }
   for (int i = 0; i < location; i++) {
-    if (board.tiles[i] == DESERT) {
+    if (board.abstractTiles[i] == DESERT) {
       desertsFound++;
     }
   }
