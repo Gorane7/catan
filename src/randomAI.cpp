@@ -33,7 +33,7 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
     action.actionType = BUILD_ROAD;
     action.actionLocation = rand() % ROAD_ARRAY_LENGTH;
   }
-  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[WHEAT] >= 1) {
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[WHEAT] >= 1 && hasVillageSpot(board, index)) {
     action.actionType = BUILD_VILLAGE;
     action.actionLocation = rand() % VILLAGE_ARRAY_LENGTH;
   }
