@@ -1,6 +1,7 @@
 #include "game.hpp"
 #include "terminal_ui.hpp"
 #include "randomAI.hpp"
+#include "action.hpp"
 
 #include <iostream>
 
@@ -175,7 +176,15 @@ void askAction(Game& game) {
   } else {
     // normal turn
     roll(game);
-    game.currentTurn++;
+    Action action = game.players[game.currentTurn].getAction(game.board);
+    if (action.actionType == END_TURN) {
+      game.currentTurn++;
+    } else if (action.actionType == BUILD_ROAD) {
+
+    } else {
+      std::cout << "Warning, invalid action type " << action.actionType << "\n";
+    }
+
   }
 
   game.currentTurn = game.currentTurn % game.playerAmount;

@@ -1,5 +1,6 @@
 
 #include "randomAI.hpp"
+#include "action.hpp"
 
 #include <stdlib.h>
 #include <ctime>
@@ -15,4 +16,10 @@ int RandomAI::freeRoadLocation(GameBoard board, int myIndex, int nextToVillage) 
   int answer = rand() % ROAD_ARRAY_LENGTH;
   //std::cout << "PLayer with index " << myIndex << " was asked to place a road next to village " << nextToVillage << " and the answer was " << answer << "\n";
   return answer;
+}
+
+Action RandomAI::getAction(GameBoard board) {
+  Action action;
+  action.actionType = END_TURN;
+  return action;
 }
