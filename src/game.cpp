@@ -10,6 +10,7 @@ Game createGame(int playerAmount) {
   game.playerAmount = playerAmount;
   game.currentTurn = 0;
   game.currentPlayerRolled = false;
+  game.winner = -1;
   GameBoard board = randomBoard(playerAmount);
   game.board = board;
 
@@ -23,6 +24,7 @@ Game createGame(int playerAmount) {
     game.players[i] = ai;
     PlayerResources resources;
     game.resources[i] = resources;
+    game.playerPoints[i] = 0;
   }
   return game;
 }
@@ -127,6 +129,14 @@ void roll(Game& game) {
   }
 }
 
+void checkWinner(Game& game) {
+  for (int i = 0; i < game.playerAmount; i++) {
+    if (game.playerPoints[i] >= 10) {
+      game.winner = i;
+    }
+  }
+}
+
 void askAction(Game& game) {
   std::cout << "Asking for action from player " << game.currentTurn << "\n";
   int prevTurn = game.currentTurn;
@@ -142,8 +152,9 @@ void askAction(Game& game) {
         villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
       }
       while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
-      game.board.villages[villageLocation] = game.currentTurn;
       std::cout << "Player " << game.currentTurn << " placing village\n";
+      game.board.villages[villageLocation] = game.currentTurn;
+      game.playerPoints[game.currentTurn]++;
       game.board.villageAmount++;
       std::vector<int> thisAction;
       thisAction.push_back(VILLAGE_PLACED);
@@ -213,6 +224,7 @@ void askAction(Game& game) {
           std::cout << "Player " << game.currentTurn << " builds a village at " << action.actionLocation << "\n";
           actionValid = true;
           game.board.villages[action.actionLocation] = game.currentTurn;
+          game.playerPoints[game.currentTurn]++;
           game.resources[game.currentTurn].resources[WOOD]--;
           game.resources[game.currentTurn].resources[CLAY]--;
           game.resources[game.currentTurn].resources[SHEEP]--;
@@ -222,7 +234,12 @@ void askAction(Game& game) {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
       }
     }
+  }
 
+  checkWinner(game);
+  if (game.winner != -1) {
+    std::cout << "Player " << game.winner << " has won, game ends!!!\n";
+    return;
   }
 
   game.currentTurn = game.currentTurn % game.playerAmount;

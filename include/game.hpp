@@ -22,6 +22,8 @@ struct Game {
   PlayerResources resources[MAX_PLAYERS];
   std::vector<std::vector<int>> history;
   bool currentPlayerRolled;
+  int playerPoints[MAX_PLAYERS];
+  int winner;
 };
 
 Game createGame(int);
