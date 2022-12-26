@@ -3,6 +3,17 @@
 #include <iostream>
 
 
+void displayState(Game game) {
+  for (int i = 0; i < game.playerAmount; i++) {
+    for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
+      std::cout << "Player " << i << " has " << game.resources[i].resources[j] << " " << RESOURCE_NAMES[j] << "\n";
+    }
+    std::cout << "\n";
+  }
+  return;
+}
+
+
 void displayBoardInfo(GameBoard board) {
   std::cout << "Tiles on board: \n";
   int desertsFound = 0;

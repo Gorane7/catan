@@ -300,6 +300,7 @@ void ActualUI::run() {
     int thisTime = time(0);
     if (thisTime - lastTime) {
       askAction(game);
+      displayState(game);
       lastTime = thisTime;
       std::cout << framesSinceLast << " frames per second\n";
       framesSinceLast = 0;

@@ -18,6 +18,8 @@ Game createGame(int playerAmount) {
   for (int i = 0; i < playerAmount; i++) {
     RandomAI ai;
     game.players[i] = ai;
+    PlayerResources resources;
+    game.resources[i] = resources;
   }
   return game;
 }
