@@ -94,10 +94,46 @@ bool isValidRoadLocationNextToVillage(GameBoard board, int roadLocation, int pla
   return villageOnBoard(villageA) && villageOnBoard(villageB) && areNeighbours(villageA, villageB) && (villageA == villageLocation || villageB == villageLocation);
 }
 
+bool roadConnectsToPlayersVillage(GameBoard board, int roadLocation, int playerID) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  return board.villages[villageA] == playerID || board.villages[villageB] == playerID;
+}
+
+bool roadConnectsToPlayersRoad(GameBoard board, int roadLocation, int playerID) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+    if (areNeighbours(i, villageA)) {
+      if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageA] == playerID) {
+        return true;
+      }
+      if (board.roads[villageA * VILLAGE_ARRAY_LENGTH + i] == playerID) {
+        return true;
+      }
+    }
+    if (areNeighbours(i, villageB)) {
+      if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageB] == playerID) {
+        return true;
+      }
+      if (board.roads[villageB * VILLAGE_ARRAY_LENGTH + i] == playerID) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool roadLocationIsEmpty(GameBoard board, int roadLocation) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  return board.roads[villageA * VILLAGE_ARRAY_LENGTH + villageB] == -1 && board.roads[villageB * VILLAGE_ARRAY_LENGTH + villageA] == -1;
+}
+
 bool isValidRoadLocationForPlayer(GameBoard board, int roadLocation, int playerID) {
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
-  return board.roads[roadLocation] == -1 && areNeighbours(villageA, villageB);
+  return (roadConnectsToPlayersRoad(board, roadLocation, playerID) || roadConnectsToPlayersVillage(board, roadLocation, playerID)) && roadLocationIsEmpty(board, roadLocation) && areNeighbours(villageA, villageB);
 }
 
 bool villageOnBoard(int village) {
