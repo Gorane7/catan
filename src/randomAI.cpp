@@ -13,6 +13,6 @@ int RandomAI::freeVillageLocation(GameBoard board, int myIndex) {
 
 int RandomAI::freeRoadLocation(GameBoard board, int myIndex, int nextToVillage) {
   int answer = rand() % ROAD_ARRAY_LENGTH;
-  std::cout << "PLayer with index " << myIndex << " was asked to place a road next to village " << nextToVillage << " and the answer was " << answer << "\n";
+  //std::cout << "PLayer with index " << myIndex << " was asked to place a road next to village " << nextToVillage << " and the answer was " << answer << "\n";
   return answer;
 }

@@ -24,6 +24,58 @@ Game createGame(int playerAmount) {
   return game;
 }
 
+void giveResourcesForVillage(Game& game, int village) {
+  int player = game.board.villages[village];
+  std::cout << "Giving resources to player " << player << " for resources around village " << village << "\n";
+  int tileX = villageArrToTileX(village);
+  int tileY = villageArrToTileY(village);
+  bool isUpper = villageArrToUpperBool(village);
+  int arrs[6];
+  if (isUpper) {
+    arrs[0] = tileX - 1;
+    arrs[1] = tileY + 1;
+    arrs[2] = tileX;
+    arrs[3] = tileY + 1;
+    arrs[4] = tileX;
+    arrs[5] = tileY;
+  } else {
+    arrs[0] = tileX + 1;
+    arrs[1] = tileY - 1;
+    arrs[2] = tileX;
+    arrs[3] = tileY - 1;
+    arrs[4] = tileX;
+    arrs[5] = tileY;
+  }
+  for (int j = 0; j < MAP_WIDTH * MAP_WIDTH; j++) {
+    std::cout << "Location " << j << " has resource " << game.board.tiles[j] << "\n";
+  }
+  for (int i = 0; i < 3; i++) {
+    int x = arrs[i * 2] + MAP_RADIUS;
+    int y = arrs[i * 2 + 1] + MAP_RADIUS;
+    if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
+      std::cout << "Neighbour was not in region for which mapping works\n";
+      continue;
+    }
+    int neighbour = y * MAP_WIDTH + x;
+
+    std::cout << "Neighbour was " << neighbour << "\n";
+
+    if (!isValidTile(neighbour)) {
+      continue;
+    }
+
+    std::cout << "Neighbour was valid\n";
+
+    int resource = game.board.tiles[neighbour];
+    std::cout << "Giving resource " << resource - 1 << " to player " << player << "\n";
+    if (resource > 0) {
+      game.resources[player].resources[resource - 1]++;
+    }
+    std::cout << "One of it's neighbours is (" << arrs[i * 2] << ", " << arrs[i * 2 + 1] << ") -> " << neighbour << "\n";
+  }
+  return;
+}
+
 void askAction(Game& game) {
   std::cout << "Asking for action from player " << game.currentTurn << "\n";
   int prevTurn = game.currentTurn;
@@ -47,6 +99,9 @@ void askAction(Game& game) {
       thisAction.push_back(game.currentTurn);
       thisAction.push_back(villageLocation);
       game.history.push_back(thisAction);
+      if (game.board.villageAmount > game.playerAmount) {
+        giveResourcesForVillage(game, villageLocation);
+      }
     } else {
       // Road placement
       int roadLocation;

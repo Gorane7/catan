@@ -247,7 +247,7 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
   }
 
   int c = 0;
-  for (int i = 0; i < MAP_RADIUS * MAP_RADIUS; i++) {
+  for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
     if (isValidTile(i)) {
       board.tiles[i] = board.abstractTiles[c];
       c++;
