@@ -46,9 +46,6 @@ void giveResourcesForVillage(Game& game, int village) {
     arrs[4] = tileX;
     arrs[5] = tileY;
   }
-  for (int j = 0; j < MAP_WIDTH * MAP_WIDTH; j++) {
-    std::cout << "Location " << j << " has resource " << game.board.tiles[j] << "\n";
-  }
   for (int i = 0; i < 3; i++) {
     int x = arrs[i * 2] + MAP_RADIUS;
     int y = arrs[i * 2 + 1] + MAP_RADIUS;
@@ -71,9 +68,60 @@ void giveResourcesForVillage(Game& game, int village) {
     if (resource > 0) {
       game.resources[player].resources[resource - 1]++;
     }
-    std::cout << "One of it's neighbours is (" << arrs[i * 2] << ", " << arrs[i * 2 + 1] << ") -> " << neighbour << "\n";
+    //std::cout << "One of it's neighbours is (" << arrs[i * 2] << ", " << arrs[i * 2 + 1] << ") -> " << neighbour << "\n";
   }
   return;
+}
+
+void roll(Game& game) {
+  int rollA = rand() % 6;
+  int rollB = rand() % 6;
+  std::cout << "Player " << game.currentTurn << " rolls " << rollA + 1 << " and " << rollB + 1 << "\n";
+  int rollTotal = rollA + rollB + 2;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+    if (game.board.villages[i] == -1) {
+      continue;
+    }
+    int player = game.board.villages[i];
+    int tileX = villageArrToTileX(i);
+    int tileY = villageArrToTileY(i);
+    bool isUpper = villageArrToUpperBool(i);
+    int arrs[6];
+    if (isUpper) {
+      arrs[0] = tileX - 1;
+      arrs[1] = tileY + 1;
+      arrs[2] = tileX;
+      arrs[3] = tileY + 1;
+      arrs[4] = tileX;
+      arrs[5] = tileY;
+    } else {
+      arrs[0] = tileX + 1;
+      arrs[1] = tileY - 1;
+      arrs[2] = tileX;
+      arrs[3] = tileY - 1;
+      arrs[4] = tileX;
+      arrs[5] = tileY;
+    }
+    for (int j = 0; j < 3; j++) {
+      int x = arrs[j * 2] + MAP_RADIUS;
+      int y = arrs[j * 2 + 1] + MAP_RADIUS;
+      if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
+        continue;
+      }
+      int neighbour = y * MAP_WIDTH + x;
+      if (!isValidTile(neighbour)) {
+        continue;
+      }
+      //std::cout << "Tile (" << tileX << ", " << tileY << ") had neighbour (" << x << ", " << y << ")\n";
+      //std::cout << "Tile " << neighbour << " in abstract counting is " << tileToAbstractTile(neighbour) << "\n";
+      //std::cout << "Tile " << tileToAbstractTile(neighbour) << " has number " << numberAtTile(game.board, tileToAbstractTile(neighbour)) << "\n\n";
+      int number = numberAtTile(game.board, tileToAbstractTile(neighbour));
+      if (number == rollTotal) {
+        game.resources[player].resources[game.board.tiles[neighbour] - 1]++;
+        std::cout << "Player " << player << " gets resource " << game.board.tiles[neighbour] - 1 << "\n";
+      }
+    }
+  }
 }
 
 void askAction(Game& game) {
@@ -126,6 +174,7 @@ void askAction(Game& game) {
 
   } else {
     // normal turn
+    roll(game);
     game.currentTurn++;
   }
 

@@ -257,3 +257,13 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
   }
   return board;
 }
+
+int tileToAbstractTile(int tile) {
+  int c = 0;
+  for (int i = 0; i < tile; i++) {
+    if (isValidTile(i)) {
+      c++;
+    }
+  }
+  return c;
+}

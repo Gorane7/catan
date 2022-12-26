@@ -26,5 +26,6 @@ struct Game {
 Game createGame(int);
 void askAction(Game&);
 void giveResourcesForVillage(Game&, int);
+void roll(Game&);
 
 #endif

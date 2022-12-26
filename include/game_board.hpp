@@ -80,5 +80,6 @@ bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidTile(int);
 bool villageOnBoard(int, int);
 bool villageOnBoard(int);
+int tileToAbstractTile(int);
 
 #endif
