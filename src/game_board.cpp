@@ -94,6 +94,12 @@ bool isValidRoadLocationNextToVillage(GameBoard board, int roadLocation, int pla
   return villageOnBoard(villageA) && villageOnBoard(villageB) && areNeighbours(villageA, villageB) && (villageA == villageLocation || villageB == villageLocation);
 }
 
+bool isValidRoadLocationForPlayer(GameBoard board, int roadLocation, int playerID) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  return board.roads[roadLocation] == -1 && areNeighbours(villageA, villageB);
+}
+
 bool villageOnBoard(int village) {
   return villageOnBoard(village % (MAP_WIDTH * 2 + 1), village / (MAP_WIDTH * 2 + 1));
 }

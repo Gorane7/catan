@@ -1,6 +1,7 @@
 
 #include "randomAI.hpp"
 #include "action.hpp"
+#include "player_resources.hpp"
 
 #include <stdlib.h>
 #include <ctime>
@@ -18,8 +19,13 @@ int RandomAI::freeRoadLocation(GameBoard board, int myIndex, int nextToVillage) 
   return answer;
 }
 
-Action RandomAI::getAction(GameBoard board) {
+Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
   Action action;
+  PlayerResources myResources = resources[index];
   action.actionType = END_TURN;
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
+    action.actionType = BUILD_ROAD;
+    action.actionLocation = rand() % ROAD_ARRAY_LENGTH;
+  }
   return action;
 }

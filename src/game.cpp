@@ -18,6 +18,7 @@ Game createGame(int playerAmount) {
 
   for (int i = 0; i < playerAmount; i++) {
     RandomAI ai;
+    ai.index = i;
     game.players[i] = ai;
     PlayerResources resources;
     game.resources[i] = resources;
@@ -176,13 +177,23 @@ void askAction(Game& game) {
   } else {
     // normal turn
     roll(game);
-    Action action = game.players[game.currentTurn].getAction(game.board);
-    if (action.actionType == END_TURN) {
-      game.currentTurn++;
-    } else if (action.actionType == BUILD_ROAD) {
-
-    } else {
-      std::cout << "Warning, invalid action type " << action.actionType << "\n";
+    bool actionValid = false;
+    while (!actionValid) {
+      Action action = game.players[game.currentTurn].getAction(game.board, game.resources);
+      if (action.actionType == END_TURN) {
+        game.currentTurn++;
+        actionValid = true;
+      } else if (action.actionType == BUILD_ROAD) {
+        if (isValidRoadLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
+          std::cout << "Player " << game.currentTurn << " built road\n";
+          game.board.roads[action.actionLocation] = game.currentTurn;
+          actionValid = true;
+          game.resources[game.currentTurn].resources[WOOD]--;
+          game.resources[game.currentTurn].resources[CLAY]--;
+        }
+      } else {
+        std::cout << "Warning, invalid action type " << action.actionType << "\n";
+      }
     }
 
   }

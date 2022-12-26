@@ -1,14 +1,16 @@
 #ifndef RANDOM_AI_HPP
 #define RANDOM_AI_HPP
 
-#include "player.hpp"
 #include "action.hpp"
+#include "player_resources.hpp"
+#include "game_board.hpp"
 
-class RandomAI: public Player {
+class RandomAI {
 public:
   int freeVillageLocation(GameBoard, int);
   int freeRoadLocation(GameBoard, int, int);
-  Action getAction(GameBoard);
+  Action getAction(GameBoard, PlayerResources[]);
+  int index;
 };
 
 #endif
