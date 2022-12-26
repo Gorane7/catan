@@ -36,6 +36,24 @@ GLuint generateBuffer(GLfloat bufferData[], int size) {
   return buffer;
 }
 
+void bindBuffer(GLuint buffer, int id, int size) {
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+  glVertexAttribPointer(
+    id,                               // attribute. No particular reason for 1, but must match the layout in the shader.
+    size,                             // size
+    GL_FLOAT,                         // type
+    GL_FALSE,                         // normalized?
+    0,                                // stride
+    (void*)0                          // array buffer offset
+  );
+}
+
+void clearScreen() {
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glEnableVertexAttribArray(0);
+  glEnableVertexAttribArray(1);
+}
+
 void run() {
   int playerAmount = 4;
   Game game = createGame(playerAmount);
@@ -289,85 +307,29 @@ void run() {
     }
     framesSinceLast++;
 
-		// Clear the screen
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
+    clearScreen();
+
 
 		glUseProgram(programID);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-    // Vertices
-		glBindBuffer(GL_ARRAY_BUFFER, tileVertexBuffer);
-		glVertexAttribPointer(
-			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-    // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, tileColourBuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			3,                                // size
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
-		glDrawArrays(GL_TRIANGLES, 0, TILE_AMOUNT * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
+    bindBuffer(tileVertexBuffer, 0, 3);
+    bindBuffer(tileColourBuffer, 1, 3);
+    glDrawArrays(GL_TRIANGLES, 0, TILE_AMOUNT * vertex_per_tile); // 12*3 indices starting at 0 -> 12 triangles
 
 
 		glUseProgram(UVprogramID);
 		glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &MVP[0][0]);
-    // Additional stuff for textures
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, Texture);
 		glUniform1i(TextureID, 0);
-    // Vertices
-		glBindBuffer(GL_ARRAY_BUFFER, numberVertexBuffer);
-		glVertexAttribPointer(
-			0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-			3,                  // size
-			GL_FLOAT,           // type
-			GL_FALSE,           // normalized?
-			0,                  // stride
-			(void*)0            // array buffer offset
-		);
-    // Colours
-		glBindBuffer(GL_ARRAY_BUFFER, numberColourBuffer);
-		glVertexAttribPointer(
-			1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-			2,                                // size : U+V => 2
-			GL_FLOAT,                         // type
-			GL_FALSE,                         // normalized?
-			0,                                // stride
-			(void*)0                          // array buffer offset
-		);
+    bindBuffer(numberVertexBuffer, 0, 3);
+    bindBuffer(numberColourBuffer, 1, 2);
     glDrawArrays(GL_TRIANGLES, 0, NUMBER_AMOUNT * vertex_per_number);
 
 
-    // Vertices
-    glBindBuffer(GL_ARRAY_BUFFER, villageVertexBuffer);
-    glVertexAttribPointer(
-      0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-      3,                  // size
-      GL_FLOAT,           // type
-      GL_FALSE,           // normalized?
-      0,                  // stride
-      (void*)0            // array buffer offset
-    );
-    // Colours
-    glBindBuffer(GL_ARRAY_BUFFER, villageColourBuffer);
-    glVertexAttribPointer(
-      1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-      3,                                // size
-      GL_FLOAT,                         // type
-      GL_FALSE,                         // normalized?
-      0,                                // stride
-      (void*)0                          // array buffer offset
-    );
+    glUseProgram(programID);
+    bindBuffer(villageVertexBuffer, 0, 3);
+    bindBuffer(villageColourBuffer, 1, 3);
     for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
       if (game.board.villages[i] == -1) {
         continue;
@@ -384,33 +346,15 @@ void run() {
         1.732f * tileX + 0.866f * tileY, 1.5f * tileY + (isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
       );
       glm::mat4 thisVillage = Projection * View * modelVillage; // Remember, matrix multiplication is the other way around
-      glUseProgram(programID);
-      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
 
+      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
       glDrawArrays(GL_TRIANGLES, game.board.villages[i] * vertex_per_village, vertex_per_village); // 12*3 indices starting at 0 -> 12 triangles
     }
 
 
-    // Vertices
-    glBindBuffer(GL_ARRAY_BUFFER, roadVertexBuffer);
-    glVertexAttribPointer(
-      0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
-      3,                  // size
-      GL_FLOAT,           // type
-      GL_FALSE,           // normalized?
-      0,                  // stride
-      (void*)0            // array buffer offset
-    );
-    // Colours
-    glBindBuffer(GL_ARRAY_BUFFER, roadColourBuffer);
-    glVertexAttribPointer(
-      1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
-      3,                                // size
-      GL_FLOAT,                         // type
-      GL_FALSE,                         // normalized?
-      0,                                // stride
-      (void*)0                          // array buffer offset
-    );
+    bindBuffer(roadVertexBuffer, 0, 3);
+    bindBuffer(roadColourBuffer, 1, 3);
+    glUseProgram(programID);
     for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
       if (game.board.roads[i] == -1) {
         continue;
@@ -441,9 +385,8 @@ void run() {
       glm::mat4 roadRotation = glm::rotate(angle, myRotationAxis);
 
       glm::mat4 thisRoad = Projection * View * modelRoad * roadRotation; // Remember, matrix multiplication is the other way around
-      glUseProgram(programID);
-      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisRoad[0][0]);
 
+      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisRoad[0][0]);
       glDrawArrays(GL_TRIANGLES, game.board.roads[i] * vertex_per_road, vertex_per_road); // 12*3 indices starting at 0 -> 12 triangles
     }
 
