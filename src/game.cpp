@@ -30,35 +30,45 @@ void askAction(Game& game) {
   int preVillageAmount = game.board.villageAmount;
   int preRoadAmount = game.board.roadAmount;
 
-  if (game.board.villageAmount < 2 * game.playerAmount) {
+  if (game.board.roadAmount < 2 * game.playerAmount) {
     // initial placement
-    int villageLocation;
-    do {
-      villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
+    if (game.board.villageAmount == game.board.roadAmount) {
+      // Village placement
+      int villageLocation;
+      do {
+        villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
+      }
+      while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
+      game.board.villages[villageLocation] = game.currentTurn;
+      std::cout << "Player " << game.currentTurn << " placing village\n";
+      game.board.villageAmount++;
+      std::vector<int> thisAction;
+      thisAction.push_back(VILLAGE_PLACED);
+      thisAction.push_back(game.currentTurn);
+      thisAction.push_back(villageLocation);
+      game.history.push_back(thisAction);
+    } else {
+      // Road placement
+      int roadLocation;
+      int villageLocation = game.history.back()[2];
+      do {
+        roadLocation = game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation);
+      }
+      while (!isValidRoadLocationNextToVillage(game.board, roadLocation, game.currentTurn, villageLocation));
+      game.board.roads[roadLocation] = game.currentTurn;
+      std::cout << "Player " << game.currentTurn << " placing village\n";
+      game.board.roadAmount++;
+      if (game.board.roadAmount <= game.playerAmount) {
+        game.currentTurn++;
+      }
+      if (game.board.roadAmount >= game.playerAmount) {
+        game.currentTurn--;
+      }
+      if (game.board.roadAmount == 2 * game.playerAmount) {
+        game.currentTurn++;
+      }
     }
-    while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
-    game.board.villages[villageLocation] = game.currentTurn;
-    std::cout << "Player " << game.currentTurn << " placing village\n";
-    game.board.villageAmount++;
 
-    int roadLocation;
-    do {
-      roadLocation = game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation);
-    }
-    while (!isValidRoadLocationNextToVillage(game.board, roadLocation, game.currentTurn, villageLocation));
-    game.board.roads[roadLocation] = game.currentTurn;
-    std::cout << "Player " << game.currentTurn << " placing village\n";
-    game.board.roadAmount++;
-
-    if (game.board.villageAmount <= game.playerAmount) {
-      game.currentTurn++;
-    }
-    if (game.board.villageAmount >= game.playerAmount) {
-      game.currentTurn--;
-    }
-    if (game.board.villageAmount == 2 * game.playerAmount) {
-      game.currentTurn++;
-    }
   } else {
     // normal turn
     game.currentTurn++;
