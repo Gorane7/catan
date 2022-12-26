@@ -23,6 +23,12 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
   Action action;
   PlayerResources myResources = resources[index];
   action.actionType = END_TURN;
+  int tradeFrom = rand() % RESOURCE_TYPE_AMOUNT;
+  if (myResources.resources[tradeFrom] >= 4) {
+    action.actionType = TRADE_RESOURCES;
+    action.resourceFrom = tradeFrom;
+    action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
+  }
   if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
     action.actionType = BUILD_ROAD;
     action.actionLocation = rand() % ROAD_ARRAY_LENGTH;

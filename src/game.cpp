@@ -186,10 +186,17 @@ void askAction(Game& game) {
       } else if (action.actionType == BUILD_ROAD) {
         if (isValidRoadLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
           std::cout << "Player " << game.currentTurn << " built road\n";
-          game.board.roads[action.actionLocation] = game.currentTurn;
           actionValid = true;
+          game.board.roads[action.actionLocation] = game.currentTurn;
           game.resources[game.currentTurn].resources[WOOD]--;
           game.resources[game.currentTurn].resources[CLAY]--;
+        }
+      } else if (action.actionType == TRADE_RESOURCES) {
+        if (game.resources[game.currentTurn].resources[action.resourceFrom] >= 4) {
+          std::cout << "Player " << game.currentTurn << " trades 4 " << RESOURCE_NAMES[action.resourceFrom] << " for 1 " << RESOURCE_NAMES[action.resourceTo] << "\n";
+          actionValid = true;
+          game.resources[game.currentTurn].resources[action.resourceFrom] -= 4;
+          game.resources[game.currentTurn].resources[action.resourceTo] += 1;
         }
       } else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
