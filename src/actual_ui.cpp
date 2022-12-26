@@ -54,25 +54,24 @@ void clearScreen() {
   glEnableVertexAttribArray(1);
 }
 
-void run() {
-  int playerAmount = 4;
-  Game game = createGame(playerAmount);
-
-  float tile_deltas[6 * 3 * 3];
+ActualUI::ActualUI(int playerAmount) {
+  srand (static_cast <unsigned> (time(0)));
+  game = createGame(playerAmount);
+  // Calculate tile vertices from definition
   for (int i = 0; i < 6 * 3; i++) {
     tile_deltas[i * 3 + 0] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 0];
     tile_deltas[i * 3 + 1] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 1];
     tile_deltas[i * 3 + 2] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 2];
   }
-
-  float road_deltas[12 * 3 * 3];
+  // Calculate road vertices from definition
   for (int i = 0; i < 12 * 3; i++) {
     road_deltas[i * 3 + 0] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 0];
     road_deltas[i * 3 + 1] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 1];
     road_deltas[i * 3 + 2] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 2];
   }
+}
 
-  srand (static_cast <unsigned> (time(0)));
+void ActualUI::run() {
 	// Initialise GLFW
 	if( !glfwInit() )
 	{

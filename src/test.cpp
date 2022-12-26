@@ -19,5 +19,6 @@ void testVillageArrToXYAndBack() {
 
 int main(void){
   //testVillageArrToXYAndBack();
-  run();
+  ActualUI ui(4);
+  ui.run();
 }

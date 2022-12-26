@@ -2,6 +2,7 @@
 #define ACTUAL_UI_HPP
 
 #include "game_board.hpp"
+#include "game.hpp"
 
 static const int vertex_per_tile = 18;
 static const int float_per_tile = vertex_per_tile * 3;
@@ -189,6 +190,14 @@ static const float village_centers[] = {
   2.598f, -3.5f, 0.0f,
 };
 
-void run();
+class ActualUI {
+public:
+  ActualUI(int);
+  void run();
+private:
+  float tile_deltas[6 * 3 * 3];
+  float road_deltas[12 * 3 * 3];
+  Game game;
+};
 
 #endif
