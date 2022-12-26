@@ -29,7 +29,7 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
     action.resourceFrom = tradeFrom;
     action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
   }
-  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && hasRoadSpot(board, index)) {
     action.actionType = BUILD_ROAD;
     action.actionLocation = rand() % ROAD_ARRAY_LENGTH;
   }

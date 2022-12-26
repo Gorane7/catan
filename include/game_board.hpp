@@ -80,6 +80,7 @@ bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidRoadLocationForPlayer(GameBoard, int, int);
 bool isValidVillageLocationForPlayer(GameBoard, int, int);
 bool hasVillageSpot(GameBoard, int);
+bool hasRoadSpot(GameBoard, int);
 bool isValidTile(int);
 bool villageOnBoard(int, int);
 bool villageOnBoard(int);

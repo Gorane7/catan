@@ -74,15 +74,12 @@ bool areNeighbours(int a, int b) {
   int dx = tileXb - tileXa;
   int dy = tileYb - tileYa;
   if (dx == -1 && dy == 2) {
-    std::cout << "Vertical road\n";
     return true;
   }
   if (dx == 0 && dy == 1) {
-    std::cout << "Down right road\n";
     return true;
   }
   if (dx == -1 && dy == 1) {
-    std::cout << "Down left road\n";
     return true;
   }
   return false;
@@ -137,7 +134,7 @@ bool roadLocationIsEmpty(GameBoard board, int roadLocation) {
 bool isValidRoadLocationForPlayer(GameBoard board, int roadLocation, int playerID) {
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
-  return villageOnBoard(villageA) && villageOnBoard(villageB) && (roadConnectsToPlayersRoad(board, roadLocation, playerID) || roadConnectsToPlayersVillage(board, roadLocation, playerID)) && roadLocationIsEmpty(board, roadLocation) && areNeighbours(villageA, villageB);
+  return areNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB) && (roadConnectsToPlayersRoad(board, roadLocation, playerID) || roadConnectsToPlayersVillage(board, roadLocation, playerID)) && roadLocationIsEmpty(board, roadLocation);
 }
 
 bool isValidRoadLocation(int roadLocation) {
@@ -161,6 +158,15 @@ bool villageLocationNextToPlayersRoad(GameBoard board, int villageLocation, int 
 bool hasVillageSpot(GameBoard board, int playerID) {
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
     if (isValidVillageLocationForPlayer(board, i, playerID)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool hasRoadSpot(GameBoard board, int playerID) {
+  for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
+    if (isValidRoadLocationForPlayer(board, i, playerID)) {
       return true;
     }
   }

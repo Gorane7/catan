@@ -298,7 +298,7 @@ void ActualUI::run() {
   std::cout << "\n";
 	do{
     int thisTime = time(0);
-    if (game.winner == -1 && thisTime - lastTime) {
+    if (game.winner == -1 /*&& thisTime - lastTime*/) {
       askAction(game);
       displayState(game);
       lastTime = thisTime;
