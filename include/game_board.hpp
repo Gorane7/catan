@@ -6,6 +6,7 @@
 const int MAP_RADIUS = 2;
 const int MAP_WIDTH = MAP_RADIUS * 2 + 1;
 const int VILLAGE_ARRAY_LENGTH = (MAP_WIDTH + 1) * (2 * MAP_WIDTH + 1);
+const int ROAD_ARRAY_LENGTH = VILLAGE_ARRAY_LENGTH * VILLAGE_ARRAY_LENGTH;
 
 const int TILE_AMOUNT = 19;
 const int FOREST_AMOUNT = 4;
@@ -57,11 +58,13 @@ struct GameBoard {
   int tiles[MAP_WIDTH * MAP_WIDTH];
 
   int villages[VILLAGE_ARRAY_LENGTH];
+  int roads[ROAD_ARRAY_LENGTH];
 
   int numbers[NUMBER_AMOUNT];
   int robberLocation;
   int playerAmount;
   int villageAmount;
+  int roadAmount;
 };
 
 int villageArrayLocation(bool, int, int);
@@ -73,6 +76,9 @@ int numberAtTile(GameBoard, int);
 GameBoard randomBoard(int);
 GameBoard randomBoard(int, bool);
 bool isValidVillageLocation(GameBoard, int, int);
+bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidTile(int);
+bool villageOnBoard(int, int);
+bool villageOnBoard(int);
 
 #endif

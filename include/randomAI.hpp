@@ -6,6 +6,7 @@
 class RandomAI: public Player {
 public:
   int freeVillageLocation(GameBoard, int);
+  int freeRoadLocation(GameBoard, int, int);
 };
 
 #endif

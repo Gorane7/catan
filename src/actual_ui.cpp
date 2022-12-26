@@ -4,6 +4,7 @@
 
 #include <ctime>
 #include <iostream>
+#include <cmath>
 
 // Include GLEW
 #include <GL/glew.h>
@@ -44,6 +45,13 @@ void run() {
     tile_deltas[i * 3 + 0] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 0];
     tile_deltas[i * 3 + 1] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 1];
     tile_deltas[i * 3 + 2] = tile_delta_vertice_coordinates[tile_delta_vertices[i] * 3 + 2];
+  }
+
+  float road_deltas[12 * 3 * 3];
+  for (int i = 0; i < 12 * 3; i++) {
+    road_deltas[i * 3 + 0] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 0];
+    road_deltas[i * 3 + 1] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 1];
+    road_deltas[i * 3 + 2] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 2];
   }
 
   srand (static_cast <unsigned> (time(0)));
@@ -138,6 +146,21 @@ void run() {
     for (int j = 0; j < float_per_village; j++) {
       village_colour_buffer_data[i * float_per_village + j] = player_colours[i * 3 + j % 3];
       //std::cout << village_colour_buffer_data[i * float_per_village + j] << "\n";
+    }
+  }
+
+  GLfloat road_vertex_buffer_data[MAX_PLAYERS * float_per_road];
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    for (int j = 0; j < float_per_road; j++) {
+      road_vertex_buffer_data[i * float_per_road + j] = road_deltas[j];
+    }
+  }
+
+
+  GLfloat road_colour_buffer_data[MAX_PLAYERS * float_per_road];
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    for (int j = 0; j < float_per_road; j++) {
+      road_colour_buffer_data[i * float_per_road + j] = player_colours[i * 3 + j % 3];
     }
   }
 
@@ -240,12 +263,15 @@ void run() {
 		number_colour_buffer_data[i * 12 + 10] = basex + small;
 		number_colour_buffer_data[i * 12 + 11] = basey + small;
 	}
+
   GLuint tileVertexBuffer = generateBuffer(tile_vertex_buffer_data, sizeof(tile_vertex_buffer_data));
   GLuint tileColourBuffer = generateBuffer(tile_colour_buffer_data, sizeof(tile_colour_buffer_data));
   GLuint numberVertexBuffer = generateBuffer(number_vertex_buffer_data, sizeof(number_vertex_buffer_data));
   GLuint numberColourBuffer = generateBuffer(number_colour_buffer_data, sizeof(number_colour_buffer_data));
   GLuint villageVertexBuffer = generateBuffer(village_vertex_buffer_data, sizeof(village_vertex_buffer_data));
   GLuint villageColourBuffer = generateBuffer(village_colour_buffer_data, sizeof(village_colour_buffer_data));
+  GLuint roadVertexBuffer = generateBuffer(road_vertex_buffer_data, sizeof(road_vertex_buffer_data));
+  GLuint roadColourBuffer = generateBuffer(road_colour_buffer_data, sizeof(road_colour_buffer_data));
 
   glfwSwapInterval(0);
 
@@ -362,6 +388,63 @@ void run() {
       glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
 
       glDrawArrays(GL_TRIANGLES, game.board.villages[i] * vertex_per_village, vertex_per_village); // 12*3 indices starting at 0 -> 12 triangles
+    }
+
+
+    // Vertices
+    glBindBuffer(GL_ARRAY_BUFFER, roadVertexBuffer);
+    glVertexAttribPointer(
+      0,                  // attribute. No particular reason for 0, but must match the layout in the shader.
+      3,                  // size
+      GL_FLOAT,           // type
+      GL_FALSE,           // normalized?
+      0,                  // stride
+      (void*)0            // array buffer offset
+    );
+    // Colours
+    glBindBuffer(GL_ARRAY_BUFFER, roadColourBuffer);
+    glVertexAttribPointer(
+      1,                                // attribute. No particular reason for 1, but must match the layout in the shader.
+      3,                                // size
+      GL_FLOAT,                         // type
+      GL_FALSE,                         // normalized?
+      0,                                // stride
+      (void*)0                          // array buffer offset
+    );
+    for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
+      if (game.board.roads[i] == -1) {
+        continue;
+      }
+
+      int villageA = i / VILLAGE_ARRAY_LENGTH;
+      int villageB = i % VILLAGE_ARRAY_LENGTH;
+
+      int tileXA = villageArrToTileX(villageA);
+      int tileYA = villageArrToTileY(villageA);
+      bool isUpperA = villageArrToUpperBool(villageA);
+      int tileXB = villageArrToTileX(villageB);
+      int tileYB = villageArrToTileY(villageB);
+      bool isUpperB = villageArrToUpperBool(villageB);
+
+      float dx = 0.866f * (tileXA - tileXB) + 0.433f * (tileYA - tileYB);
+      float dy = 0.75f * (tileYA - tileYB) + (isUpperA ? 0.5f : -0.5f) - (isUpperB ? 0.5f : -0.5f);
+      float angle = std::atan2(dy, dx);
+
+      glm::mat4 modelRoad = glm::mat4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.866f * (tileXA + tileXB) + 0.433f * (tileYA + tileYB), 0.75f * (tileYA + tileYB) + (isUpperA ? 0.5f : -0.5f) + (isUpperB ? 0.5f : -0.5f), 0.0f, 1.0f
+      );
+
+      glm::vec3 myRotationAxis(0.0f, 0.0f, 1.0f);
+      glm::mat4 roadRotation = glm::rotate(angle, myRotationAxis);
+
+      glm::mat4 thisRoad = Projection * View * modelRoad * roadRotation; // Remember, matrix multiplication is the other way around
+      glUseProgram(programID);
+      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisRoad[0][0]);
+
+      glDrawArrays(GL_TRIANGLES, game.board.roads[i] * vertex_per_road, vertex_per_road); // 12*3 indices starting at 0 -> 12 triangles
     }
 
 

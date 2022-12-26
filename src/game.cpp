@@ -26,8 +26,10 @@ void askAction(Game& game) {
   std::cout << "Asking for action from player " << game.currentTurn << "\n";
   int prevTurn = game.currentTurn;
   int preVillageAmount = game.board.villageAmount;
+  int preRoadAmount = game.board.roadAmount;
 
-  if (preVillageAmount < 2 * game.playerAmount) {
+  if (game.board.villageAmount < 2 * game.playerAmount) {
+    // initial placement
     int villageLocation;
     do {
       villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
@@ -36,14 +38,27 @@ void askAction(Game& game) {
     game.board.villages[villageLocation] = game.currentTurn;
     std::cout << "Player " << game.currentTurn << " placing village\n";
     game.board.villageAmount++;
-  }
-  if (preVillageAmount < game.playerAmount - 1) {
-    game.currentTurn++;
-  } else if (preVillageAmount == game.playerAmount - 1) {
-  } else if (preVillageAmount < 2 * game.playerAmount - 1) {
-    game.currentTurn--;
-  } else if (preVillageAmount == 2 * game.playerAmount - 1) {
+
+    int roadLocation;
+    do {
+      roadLocation = game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation);
+    }
+    while (!isValidRoadLocationNextToVillage(game.board, roadLocation, game.currentTurn, villageLocation));
+    game.board.roads[roadLocation] = game.currentTurn;
+    std::cout << "Player " << game.currentTurn << " placing village\n";
+    game.board.roadAmount++;
+
+    if (game.board.villageAmount <= game.playerAmount) {
+      game.currentTurn++;
+    }
+    if (game.board.villageAmount >= game.playerAmount) {
+      game.currentTurn--;
+    }
+    if (game.board.villageAmount == 2 * game.playerAmount) {
+      game.currentTurn++;
+    }
   } else {
+    // normal turn
     game.currentTurn++;
   }
 

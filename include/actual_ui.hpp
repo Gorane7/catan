@@ -10,7 +10,37 @@ static const int float_per_number = vertex_per_number * 3;
 static const float square_height = 0.01f;
 static const int vertex_per_village = 12 * 3;
 static const int float_per_village = vertex_per_village * 3;
+static const int vertex_per_road = 12 * 3;
+static const int float_per_road = vertex_per_road * 3;
 static const float hex_edge_length = 1.0f;
+static const float road_length_half = 0.3f;
+static const float road_radius = 0.05f;
+
+static const float road_delta_vertice_coordinates[8 * 3] = {
+  -road_length_half, -road_radius, 0.0f,  // left front down
+  -road_length_half, road_radius, 0.0f,  // left back down
+  -road_length_half, -road_radius, 2 * road_radius,  // left front up
+  -road_length_half, road_radius, 2 * road_radius,  // left back up
+  road_length_half, -road_radius, 0.0f,  // right front down
+  road_length_half, road_radius, 0.0f,  // right back down
+  road_length_half, -road_radius, 2 * road_radius,  // right front up
+  road_length_half, road_radius, 2 * road_radius,  // right back up
+};
+
+static const int road_delta_vertices[12 * 3] = {
+  0, 2, 1,
+  1, 3, 2,
+  4, 6, 5,
+  5, 7, 6,
+  0, 4, 5,
+  0, 1, 5,
+  2, 6, 7,
+  2, 3, 7,
+  0, 4, 6,
+  0, 2, 6,
+  1, 5, 7,
+  1, 3, 7
+};
 
 static const float tile_delta_vertice_coordinates[7 * 3] = {
   0.0f, 0.0f, 0.0f,     // center

@@ -51,6 +51,57 @@ int villageArrToTileY(int i) {
   return tileRow - 2;
 }
 
+bool areNeighbours(int a, int b) {
+  int tileXa = villageArrToTileX(a);
+  int tileYa = villageArrToTileY(a);
+  bool isUpperA = villageArrToUpperBool(a);
+
+  int tileXb = villageArrToTileX(b);
+  int tileYb = villageArrToTileY(b);
+  bool isUpperB = villageArrToUpperBool(b);
+
+  if (isUpperA == isUpperB) {
+    return false;
+  }
+  if (isUpperB) {
+    int temp = tileXa;
+    tileXa = tileXb;
+    tileXb = temp;
+    temp = tileYa;
+    tileYa = tileYb;
+    tileYb = temp;
+  } // A is upper after this;
+  int dx = tileXb - tileXa;
+  int dy = tileYb - tileYa;
+  if (dx == -1 && dy == 2) {
+    std::cout << "Vertical road\n";
+    return true;
+  }
+  if (dx == 0 && dy == 1) {
+    std::cout << "Down right road\n";
+    return true;
+  }
+  if (dx == -1 && dy == 1) {
+    std::cout << "Down left road\n";
+    return true;
+  }
+  return false;
+}
+
+bool isValidRoadLocationNextToVillage(GameBoard board, int roadLocation, int playerID, int villageLocation) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  return villageOnBoard(villageA) && villageOnBoard(villageB) && areNeighbours(villageA, villageB) && (villageA == villageLocation || villageB == villageLocation);
+}
+
+bool villageOnBoard(int village) {
+  return villageOnBoard(village % (MAP_WIDTH * 2 + 1), village / (MAP_WIDTH * 2 + 1));
+}
+
+bool villageOnBoard(int x, int y) {
+  return !(x + y < 2 || MAP_WIDTH * 2 - x + y < 2 || MAP_WIDTH - y + x < 2 || MAP_WIDTH * 3 - y - x < 2);
+}
+
 bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) {
   std::cout << "Was asked if " << villageLocation << " is a valid location for player " << playerID << "\n";
   if (board.villages[villageLocation] != -1) {
@@ -59,7 +110,7 @@ bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) 
   }
   int villageX = villageLocation % (MAP_WIDTH * 2 + 1);
   int villageY = villageLocation / (MAP_WIDTH * 2 + 1);
-  if (villageX + villageY < 2 || MAP_WIDTH * 2 - villageX + villageY < 2 || MAP_WIDTH - villageY + villageX < 2 || MAP_WIDTH * 3 - villageY - villageX < 2) {
+  if (!villageOnBoard(villageX, villageY)) {
     std::cout << "Village is so far in corner that it is out of map\n";
     return false;
   }
@@ -114,11 +165,16 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
 
   board.playerAmount = playerAmount;
   board.villageAmount = 0;
+  board.roadAmount = 0;
+
+  for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
+    board.roads[i] = -1;
+  }
+
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
     board.villages[i] = -1;
   }
 
-  // Prefill tile array
   int i = 0;
   for (int j = 0; j < TILE_TYPE_AMOUNT; j++) {
     for (int k = 0; k < TILE_AMOUNTS[j]; k++) {
@@ -126,6 +182,7 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
       i++;
     }
   }
+
   // Shuffle tile array
   for (int i = TILE_AMOUNT - 1; i >= 0; i--) {
     int takeFrom = rand() % (i + 1);
