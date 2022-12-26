@@ -113,7 +113,7 @@ void run() {
   GLuint TextureID  = glGetUniformLocation(UVprogramID, "myTextureSampler");
 
 	// Projection matrix : 45� Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	glm::mat4 Projection = glm::perspective(glm::radians(50.0f), 4.0f / 3.0f, 0.1f, 100.0f);
+	glm::mat4 Projection = glm::perspective(glm::radians(55.0f), 4.0f / 3.0f, 0.1f, 100.0f);
 	// Camera matrix
 	glm::mat4 View  = glm::lookAt(
 	  glm::vec3(-0.5,-2,10), // Camera is at (4,3,-3), in World Space
@@ -342,22 +342,26 @@ void run() {
       0,                                // stride
       (void*)0                          // array buffer offset
     );
-    for (int i = 0; i < VILLAGE_LOCATION_AMOUNT; i++) {
+    for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
       if (game.board.villages[i] == -1) {
         continue;
       }
-      //glm::mat4 modelVillage = glm::translate(glm::mat4(), glm::vec3(village_centers[i * 3], village_centers[i * 3 + 1], village_centers[i * 3 + 2]));
+
+      int tileX = villageArrToTileX(i);
+      int tileY = villageArrToTileY(i);
+      bool isUpper = villageArrToUpperBool(i);
+
       glm::mat4 modelVillage = glm::mat4(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
-        village_centers[i * 3], village_centers[i * 3 + 1], village_centers[i * 3 + 2], 1.0f
+        1.732f * tileX + 0.866f * tileY, 1.5f * tileY + (isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
       );
       glm::mat4 thisVillage = Projection * View * modelVillage; // Remember, matrix multiplication is the other way around
       glUseProgram(programID);
       glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
 
-  		glDrawArrays(GL_TRIANGLES, game.board.villages[i] * vertex_per_village, vertex_per_village); // 12*3 indices starting at 0 -> 12 triangles
+      glDrawArrays(GL_TRIANGLES, game.board.villages[i] * vertex_per_village, vertex_per_village); // 12*3 indices starting at 0 -> 12 triangles
     }
 
 

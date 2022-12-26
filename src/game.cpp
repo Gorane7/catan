@@ -34,7 +34,7 @@ void askAction(Game& game) {
     }
     while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
     game.board.villages[villageLocation] = game.currentTurn;
-    //std::cout << "Player " << game.currentTurn << " placing village\n";
+    std::cout << "Player " << game.currentTurn << " placing village\n";
     game.board.villageAmount++;
   }
   if (preVillageAmount < game.playerAmount - 1) {
