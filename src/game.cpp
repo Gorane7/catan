@@ -208,7 +208,17 @@ void askAction(Game& game) {
           game.resources[game.currentTurn].resources[action.resourceFrom] -= 4;
           game.resources[game.currentTurn].resources[action.resourceTo] += 1;
         }
-      } else {
+      } else if (action.actionType == BUILD_VILLAGE) {
+        if (isValidVillageLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
+          std::cout << "Player " << game.currentTurn << " builds a village at " << action.actionLocation << "\n";
+          actionValid = true;
+          game.board.villages[action.actionLocation] = game.currentTurn;
+          game.resources[game.currentTurn].resources[WOOD]--;
+          game.resources[game.currentTurn].resources[CLAY]--;
+          game.resources[game.currentTurn].resources[SHEEP]--;
+          game.resources[game.currentTurn].resources[WHEAT]--;
+        }
+      }else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
       }
     }

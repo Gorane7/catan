@@ -140,6 +140,10 @@ bool isValidRoadLocationForPlayer(GameBoard board, int roadLocation, int playerI
   return villageOnBoard(villageA) && villageOnBoard(villageB) && (roadConnectsToPlayersRoad(board, roadLocation, playerID) || roadConnectsToPlayersVillage(board, roadLocation, playerID)) && roadLocationIsEmpty(board, roadLocation) && areNeighbours(villageA, villageB);
 }
 
+bool isValidVillageLocationForPlayer(GameBoard board, int villageLocation, int playerID) {
+  return isValidVillageLocation(board, villageLocation, playerID);
+}
+
 bool villageOnBoard(int village) {
   return villageOnBoard(village % (MAP_WIDTH * 2 + 1), village / (MAP_WIDTH * 2 + 1));
 }

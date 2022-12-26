@@ -78,6 +78,7 @@ GameBoard randomBoard(int, bool);
 bool isValidVillageLocation(GameBoard, int, int);
 bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidRoadLocationForPlayer(GameBoard, int, int);
+bool isValidVillageLocationForPlayer(GameBoard, int, int);
 bool isValidTile(int);
 bool villageOnBoard(int, int);
 bool villageOnBoard(int);
