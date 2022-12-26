@@ -21,6 +21,7 @@ struct Game {
   int currentTurn;
   PlayerResources resources[MAX_PLAYERS];
   std::vector<std::vector<int>> history;
+  bool currentPlayerRolled;
 };
 
 Game createGame(int);

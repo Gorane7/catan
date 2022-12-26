@@ -9,6 +9,7 @@ Game createGame(int playerAmount) {
   Game game;
   game.playerAmount = playerAmount;
   game.currentTurn = 0;
+  game.currentPlayerRolled = false;
   GameBoard board = randomBoard(playerAmount);
   game.board = board;
 
@@ -176,10 +177,13 @@ void askAction(Game& game) {
 
   } else {
     // normal turn
-    roll(game);
-    if (game.currentTurn == 0) {
-      for (int k = 0; k < 5; k++) {
-        //game.resources[0].resources[k]++;
+    if (!game.currentPlayerRolled) {
+      roll(game);
+      game.currentPlayerRolled = true;
+      if (game.currentTurn == 0) {
+        for (int k = 0; k < 5; k++) {
+          //game.resources[0].resources[k]++;
+        }
       }
     }
     bool actionValid = false;
@@ -188,6 +192,7 @@ void askAction(Game& game) {
       if (action.actionType == END_TURN) {
         game.currentTurn++;
         actionValid = true;
+        game.currentPlayerRolled = false;
       } else if (action.actionType == BUILD_ROAD) {
         if (isValidRoadLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
           std::cout << "Player " << game.currentTurn << " built road\n";
