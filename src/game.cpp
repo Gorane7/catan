@@ -177,6 +177,11 @@ void askAction(Game& game) {
   } else {
     // normal turn
     roll(game);
+    if (game.currentTurn == 0) {
+      for (int k = 0; k < 5; k++) {
+        //game.resources[0].resources[k]++;
+      }
+    }
     bool actionValid = false;
     while (!actionValid) {
       Action action = game.players[game.currentTurn].getAction(game.board, game.resources);

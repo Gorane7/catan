@@ -100,11 +100,15 @@ bool roadConnectsToPlayersVillage(GameBoard board, int roadLocation, int playerI
   return board.villages[villageA] == playerID || board.villages[villageB] == playerID;
 }
 
+bool villageLocationIsHostile(GameBoard board, int village, int playerID) {
+  return board.villages[village] != -1 && board.villages[village] != playerID;
+}
+
 bool roadConnectsToPlayersRoad(GameBoard board, int roadLocation, int playerID) {
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
-    if (areNeighbours(i, villageA)) {
+    if (!villageLocationIsHostile(board, villageA, playerID) && areNeighbours(i, villageA)) {
       if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageA] == playerID) {
         return true;
       }
@@ -112,7 +116,7 @@ bool roadConnectsToPlayersRoad(GameBoard board, int roadLocation, int playerID) 
         return true;
       }
     }
-    if (areNeighbours(i, villageB)) {
+    if (!villageLocationIsHostile(board, villageB, playerID) && areNeighbours(i, villageB)) {
       if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageB] == playerID) {
         return true;
       }
