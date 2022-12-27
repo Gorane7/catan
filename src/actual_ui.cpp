@@ -166,6 +166,21 @@ void ActualUI::run() {
     }
   }
 
+  GLfloat city_vertex_buffer_data[MAX_PLAYERS * float_per_city];
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    for (int j = 0; j < float_per_city; j++) {
+      city_vertex_buffer_data[i * float_per_city + j] = city_deltas[j];
+    }
+  }
+
+
+  GLfloat city_colour_buffer_data[MAX_PLAYERS * float_per_city];
+  for (int i = 0; i < MAX_PLAYERS; i++) {
+    for (int j = 0; j < float_per_city; j++) {
+      city_colour_buffer_data[i * float_per_city + j] = player_colours[i * 3 + j % 3];
+    }
+  }
+
   GLfloat road_vertex_buffer_data[MAX_PLAYERS * float_per_road];
   for (int i = 0; i < MAX_PLAYERS; i++) {
     for (int j = 0; j < float_per_road; j++) {
@@ -287,6 +302,8 @@ void ActualUI::run() {
   GLuint numberColourBuffer = generateBuffer(number_colour_buffer_data, sizeof(number_colour_buffer_data));
   GLuint villageVertexBuffer = generateBuffer(village_vertex_buffer_data, sizeof(village_vertex_buffer_data));
   GLuint villageColourBuffer = generateBuffer(village_colour_buffer_data, sizeof(village_colour_buffer_data));
+  GLuint cityVertexBuffer = generateBuffer(city_vertex_buffer_data, sizeof(city_vertex_buffer_data));
+  GLuint cityColourBuffer = generateBuffer(city_colour_buffer_data, sizeof(city_colour_buffer_data));
   GLuint roadVertexBuffer = generateBuffer(road_vertex_buffer_data, sizeof(road_vertex_buffer_data));
   GLuint roadColourBuffer = generateBuffer(road_colour_buffer_data, sizeof(road_colour_buffer_data));
 
@@ -349,6 +366,31 @@ void ActualUI::run() {
 
       glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
       glDrawArrays(GL_TRIANGLES, game.board.villages[i] * vertex_per_village, vertex_per_village); // 12*3 indices starting at 0 -> 12 triangles
+    }
+
+
+    glUseProgram(programID);
+    bindBuffer(cityVertexBuffer, 0, 3);
+    bindBuffer(cityColourBuffer, 1, 3);
+    for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+      if (game.board.cities[i] == -1) {
+        continue;
+      }
+
+      int tileX = villageArrToTileX(i);
+      int tileY = villageArrToTileY(i);
+      bool isUpper = villageArrToUpperBool(i);
+
+      glm::mat4 modelVillage = glm::mat4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        1.732f * tileX + 0.866f * tileY, 1.5f * tileY + (isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
+      );
+      glm::mat4 thisVillage = Projection * View * modelVillage; // Remember, matrix multiplication is the other way around
+
+      glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisVillage[0][0]);
+      glDrawArrays(GL_TRIANGLES, game.board.cities[i] * vertex_per_city, vertex_per_city); // 12*3 indices starting at 0 -> 12 triangles
     }
 
 

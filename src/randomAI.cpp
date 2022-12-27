@@ -37,5 +37,9 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
     action.actionType = BUILD_VILLAGE;
     action.actionLocation = rand() % VILLAGE_ARRAY_LENGTH;
   }
+  if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3 && hasCityBuildingLocation(board, index)) {
+    action.actionType = BUILD_CITY;
+    action.actionLocation = rand() % VILLAGE_ARRAY_LENGTH;
+  }
   return action;
 }

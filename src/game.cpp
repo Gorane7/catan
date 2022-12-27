@@ -123,7 +123,13 @@ void roll(Game& game) {
       int number = numberAtTile(game.board, tileToAbstractTile(neighbour));
       if (number == rollTotal) {
         game.resources[player].resources[game.board.tiles[neighbour] - 1]++;
-        std::cout << "Player " << player << " gets resource " << game.board.tiles[neighbour] - 1 << "\n";
+        if (game.board.cities[i] != -1) {
+          game.resources[player].resources[game.board.tiles[neighbour] - 1]++;
+          std::cout << "Player " << player << " gets 2 of resource " << game.board.tiles[neighbour] - 1 << "\n";
+        } else {
+          std::cout << "Player " << player << " gets resource " << game.board.tiles[neighbour] - 1 << "\n";
+        }
+
       }
     }
   }
@@ -230,7 +236,16 @@ void askAction(Game& game) {
           game.resources[game.currentTurn].resources[SHEEP]--;
           game.resources[game.currentTurn].resources[WHEAT]--;
         }
-      }else {
+      } else if (action.actionType == BUILD_CITY) {
+        if (isValidCityLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
+          std::cout << "Player " << game.currentTurn << " builds a city at " << action.actionLocation << "\n";
+          actionValid = true;
+          game.board.cities[action.actionLocation] = game.currentTurn;
+          game.playerPoints[game.currentTurn]++;
+          game.resources[game.currentTurn].resources[WHEAT] -= 2;
+          game.resources[game.currentTurn].resources[ROCK] -= 3;
+        }
+      } else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
       }
     }

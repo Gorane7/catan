@@ -58,6 +58,7 @@ struct GameBoard {
   int tiles[MAP_WIDTH * MAP_WIDTH];
 
   int villages[VILLAGE_ARRAY_LENGTH];
+  int cities[VILLAGE_ARRAY_LENGTH];
   int roads[ROAD_ARRAY_LENGTH];
 
   int numbers[NUMBER_AMOUNT];
@@ -79,8 +80,10 @@ bool isValidVillageLocation(GameBoard, int, int);
 bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidRoadLocationForPlayer(GameBoard, int, int);
 bool isValidVillageLocationForPlayer(GameBoard, int, int);
+bool isValidCityLocationForPlayer(GameBoard, int, int);
 bool hasVillageSpot(GameBoard, int);
 bool hasRoadSpot(GameBoard, int);
+bool hasCityBuildingLocation(GameBoard, int);
 bool isValidTile(int);
 bool villageOnBoard(int, int);
 bool villageOnBoard(int);

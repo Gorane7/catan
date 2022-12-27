@@ -242,6 +242,19 @@ bool isValidTile(int i) {
   return !(x + y > MAP_RADIUS || x + y < - MAP_RADIUS);
 }
 
+bool hasCityBuildingLocation(GameBoard board, int index) {
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+    if (board.villages[i] == index && board.cities[i] == -1) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool isValidCityLocationForPlayer(GameBoard board, int cityLocation, int index) {
+  return board.villages[cityLocation] == index && board.cities[cityLocation] == -1;
+}
+
 GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
   GameBoard board;
   srand((unsigned)time(0));
@@ -256,6 +269,7 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
 
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
     board.villages[i] = -1;
+    board.cities[i] = -1;
   }
 
   int i = 0;

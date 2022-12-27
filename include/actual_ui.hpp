@@ -11,6 +11,8 @@ static const int float_per_number = vertex_per_number * 3;
 static const float square_height = 0.01f;
 static const int vertex_per_village = 12 * 3;
 static const int float_per_village = vertex_per_village * 3;
+static const int vertex_per_city = 12 * 3;
+static const int float_per_city = vertex_per_city * 3;
 static const int vertex_per_road = 12 * 3;
 static const int float_per_road = vertex_per_road * 3;
 static const float hex_edge_length = 1.0f;
@@ -120,6 +122,47 @@ static const float village_deltas[] = {
 		-village_size, village_size, 2 * village_size,
 		 village_size, -village_size, 2 * village_size
 };
+
+static const float city_size = 0.25f;
+static const float city_deltas[] = {
+    -city_size, -city_size, 0.0f,
+		-city_size, -city_size, 2 * city_size,
+		-city_size, city_size, 2 * city_size,
+		 city_size, city_size, 0.0f,
+		-city_size, -city_size, 0.0f,
+		-city_size, city_size, 0.0f,
+		 city_size, -city_size, 2 * city_size,
+		-city_size, -city_size, 0.0f,
+		 city_size, -city_size, 0.0f,
+		 city_size, city_size, 0.0f,
+		 city_size, -city_size, 0.0f,
+		-city_size, -city_size, 0.0f,
+		-city_size, -city_size, 0.0f,
+		-city_size, city_size, 2 * city_size,
+		-city_size, city_size, 0.0f,
+		 city_size, -city_size, 2 * city_size,
+		-city_size, -city_size, 2 * city_size,
+		-city_size, -city_size, 0.0f,
+		-city_size, city_size, 2 * city_size,
+		-city_size, -city_size, 2 * city_size,
+		 city_size, -city_size, 2 * city_size,
+		 city_size, city_size, 2 * city_size,
+		 city_size, -city_size, 0.0f,
+		 city_size, city_size, 0.0f,
+		 city_size, -city_size, 0.0f,
+		 city_size, city_size, 2 * city_size,
+		 city_size, -city_size, 2 * city_size,
+		 city_size, city_size, 2 * city_size,
+		 city_size, city_size, 0.0f,
+		-city_size, city_size, 0.0f,
+		 city_size, city_size, 2 * city_size,
+		-city_size, city_size, 0.0f,
+		-city_size, city_size, 2 * city_size,
+		 city_size, city_size, 2 * city_size,
+		-city_size, city_size, 2 * city_size,
+		 city_size, -city_size, 2 * city_size
+};
+
 
 static const float player_colours[] = {
   1.0f, 0.0f, 0.0f,
