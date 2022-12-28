@@ -27,6 +27,7 @@ Game createGame(int playerAmount) {
     game.resources[i] = resources;
     game.playerPoints[i] = 0;
   }
+  game.developmentCardsLeft = DEVELOPMENT_CARD_AMOUNT;
   int c = 0;
   for (int i = 0; i < DEVELOPMENT_CARD_TYPE_AMOUNT; i++) {
     for (int j = 0; j < DEVELOPMENT_CARD_AMOUNTS_BY_TYPE[i]; j++) {
@@ -264,7 +265,7 @@ void askAction(Game& game) {
     }
     bool actionValid = false;
     while (!actionValid) {
-      Action action = game.players[game.currentTurn].getAction(game.board, game.resources);
+      Action action = game.players[game.currentTurn].getAction(game.board, game.resources, game.developmentCardsLeft);
       if (action.actionType == END_TURN) {
         game.currentTurn++;
         actionValid = true;
@@ -303,6 +304,19 @@ void askAction(Game& game) {
           game.playerPoints[game.currentTurn]++;
           game.resources[game.currentTurn].resources[WHEAT] -= 2;
           game.resources[game.currentTurn].resources[ROCK] -= 3;
+        }
+      } else if (action.actionType == BUY_DEVELOPMENT_CARD) {
+        if (game.developmentCardsLeft > 0) {
+          actionValid = true;
+          game.resources[game.currentTurn].resources[WHEAT]--;
+          game.resources[game.currentTurn].resources[SHEEP]--;
+          game.resources[game.currentTurn].resources[ROCK]--;
+          int cardIndex = rand() % game.developmentCardsLeft;
+          int card = game.developmentCardDeck[cardIndex];
+          game.developmentCardsLeft--;
+          game.developmentCardDeck[cardIndex] = game.developmentCardDeck[game.developmentCardsLeft];
+          game.resources[game.currentTurn].developmentCards[card]++;
+          std::cout << "Player " << game.currentTurn << " bought development card " << card << "\n";
         }
       } else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";

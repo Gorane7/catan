@@ -9,7 +9,7 @@ class RandomAI {
 public:
   int freeVillageLocation(GameBoard, int);
   int freeRoadLocation(GameBoard, int, int);
-  Action getAction(GameBoard, PlayerResources[]);
+  Action getAction(GameBoard, PlayerResources[], int);
   std::vector<int> discardResources(GameBoard, PlayerResources[], int);
   int moveRobber(GameBoard, PlayerResources[]);
   int index;

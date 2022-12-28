@@ -29,6 +29,7 @@ struct Game {
   int winner;
   int turnAmount;
   int developmentCardDeck[DEVELOPMENT_CARD_AMOUNT];
+  int developmentCardsLeft;
 };
 
 Game createGame(int);

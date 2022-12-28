@@ -41,7 +41,7 @@ std::vector<int> RandomAI::discardResources(GameBoard board, PlayerResources res
   return toDiscard;
 }
 
-Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
+Action RandomAI::getAction(GameBoard board, PlayerResources resources[], int developmentCardsLeft) {
   Action action;
   PlayerResources myResources = resources[index];
 
@@ -61,6 +61,14 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
       return action;
     }
   }
+
+  if (myResources.resources[WHEAT] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[ROCK] >= 1) {
+    if (developmentCardsLeft) {
+      action.actionType = BUY_DEVELOPMENT_CARD;
+      return action;
+    }
+  }
+
   if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
     std::vector<int> roadSpots = availableRoadSpots(board, index);
     if (roadSpots.size() > 0) {
