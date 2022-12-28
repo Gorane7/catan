@@ -317,6 +317,9 @@ void askAction(Game& game) {
           game.developmentCardDeck[cardIndex] = game.developmentCardDeck[game.developmentCardsLeft];
           game.resources[game.currentTurn].developmentCards[card]++;
           std::cout << "Player " << game.currentTurn << " bought development card " << card << "\n";
+          if (card == VICTORY_POINT_CARD) {
+            game.playerPoints[game.currentTurn]++;
+          }
         }
       } else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
