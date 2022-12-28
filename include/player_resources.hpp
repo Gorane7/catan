@@ -13,5 +13,6 @@ struct PlayerResources {
 };
 
 PlayerResources createResources();
+int chooseRandomResource(PlayerResources);
 
 #endif

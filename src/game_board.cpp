@@ -117,6 +117,48 @@ bool roadConnectsToPlayersRoad(GameBoard board, int roadLocation, int playerID) 
   return false;
 }
 
+std::vector<int> villagesNextToTile(GameBoard board, int tile) {
+  std::vector<int> villages;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+    if (board.villages[i] == -1) {
+      continue;
+    }
+    int player = board.villages[i];
+    int tileX = villageArrToTileX(i);
+    int tileY = villageArrToTileY(i);
+    bool isUpper = villageArrToUpperBool(i);
+    int arrs[6];
+    if (isUpper) {
+      arrs[0] = tileX - 1;
+      arrs[1] = tileY + 1;
+      arrs[2] = tileX;
+      arrs[3] = tileY + 1;
+      arrs[4] = tileX;
+      arrs[5] = tileY;
+    } else {
+      arrs[0] = tileX + 1;
+      arrs[1] = tileY - 1;
+      arrs[2] = tileX;
+      arrs[3] = tileY - 1;
+      arrs[4] = tileX;
+      arrs[5] = tileY;
+    }
+    for (int j = 0; j < 3; j++) {
+      int x = arrs[j * 2] + MAP_RADIUS;
+      int y = arrs[j * 2 + 1] + MAP_RADIUS;
+      if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
+        continue;
+      }
+      int neighbour = y * MAP_WIDTH + x;
+      if (!isValidTile(neighbour)) {
+        continue;
+      }
+      villages.push_back(i);
+    }
+  }
+  return villages;
+}
+
 bool roadLocationIsEmpty(GameBoard board, int roadLocation) {
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;

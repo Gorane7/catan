@@ -93,5 +93,6 @@ bool villageOnBoard(int, int);
 bool villageOnBoard(int);
 int tileToAbstractTile(int);
 int abstractTileToTile(int);
+std::vector<int> villagesNextToTile(GameBoard, int);
 
 #endif

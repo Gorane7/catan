@@ -104,14 +104,6 @@ void roll(Game& game) {
         } while (amountDiscarded < thisResourceAmount / 2);
       }
       // End discard resources
-      // Move robber
-      int abstractTileToMoveTo;
-      do {
-        abstractTileToMoveTo = game.players[game.currentTurn].moveRobber(game.board, game.resources);
-      } while (abstractTileToMoveTo == game.board.robberLocation);
-      std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
-      game.board.robberLocation = abstractTileToMoveTo;
-      // End move robber
       thisResourceAmount = 0;
       for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
         thisResourceAmount += game.resources[i].resources[j];
@@ -119,6 +111,28 @@ void roll(Game& game) {
       std::cout << "After dicarding half resources, player " << i << " has " << thisResourceAmount << " resources.\n";
     }
     std::cout << "\n";
+    // Move robber
+    int abstractTileToMoveTo;
+    do {
+      abstractTileToMoveTo = game.players[game.currentTurn].moveRobber(game.board, game.resources);
+    } while (abstractTileToMoveTo == game.board.robberLocation);
+    std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
+    game.board.robberLocation = abstractTileToMoveTo;
+    // End move robber
+    // Start robbing
+    int tile = abstractTileToTile(game.board.robberLocation);
+    std::vector<int> villages = villagesNextToTile(game.board, tile);
+    if (villages.size() > 0) {
+      int randomVillage = villages[rand() % villages.size()];
+      int targetPlayer = game.board.villages[randomVillage];
+      int randomResource = chooseRandomResource(game.resources[targetPlayer]);
+      if (randomResource != -1) {
+        game.resources[targetPlayer].resources[randomResource]--;
+        game.resources[game.currentTurn].resources[randomResource]++;
+        std::cout << "Player " << game.currentTurn << " stole resource " << randomResource << " from player " << targetPlayer << "\n";
+      }
+    }
+    // End robbing
     return;
   }
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
