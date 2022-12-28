@@ -328,6 +328,8 @@ void askAction(Game& game) {
       } else if (action.actionType == PLAY_DEVELOPMENT_CARD) {
         if (action.actionLocation == KNIGHT_CARD) {
           moveRobberAndRob(game);
+          game.resources[game.currentTurn].developmentCards[KNIGHT_CARD]--;
+          std::cout << "Player " << game.currentTurn << " successfully played knight development card.\n";
         } else {
           std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
         }

@@ -49,9 +49,7 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[], int dev
   if (myResources.developmentCards[developmentCardType] > 0) {
     action.actionType = PLAY_DEVELOPMENT_CARD;
     action.actionLocation = developmentCardType;
-    if (developmentCardType == KNIGHT_CARD) {
-      action.secondaryActionLocation = rand() % TILE_AMOUNT;
-    } else if (developmentCardType == ROAD_BUILDING_CARD) {
+    if (developmentCardType == ROAD_BUILDING_CARD) {
       action.secondaryActionLocation = rand() % ROAD_ARRAY_LENGTH;
       action.tertiaryActionLocation = rand() % ROAD_ARRAY_LENGTH;
     } else if (developmentCardType == YEAR_OF_PLENTY_CARD) {
@@ -60,6 +58,7 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[], int dev
     } else if (developmentCardType == MONOPOLY_CARD) {
       action.secondaryActionLocation = rand() % RESOURCE_TYPE_AMOUNT;
     }
+    return action;
   }
 
   if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3) {

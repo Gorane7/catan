@@ -1,4 +1,5 @@
 #include "terminal_ui.hpp"
+#include "player_resources.hpp"
 
 #include <iostream>
 
@@ -8,7 +9,13 @@ void displayState(Game game) {
     for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
       std::cout << "Player " << i << " has " << game.resources[i].resources[j] << " " << RESOURCE_NAMES[j] << "\n";
     }
-    std::cout << "\n";
+    std::cout << "Player " << i << " has ";
+    for (int j = 0; j < DEVELOPMENT_CARD_TYPE_AMOUNT; j++) {
+      if (game.resources[i].developmentCards[j] > 0) {
+        std::cout << ", " << game.resources[i].developmentCards[j] << " " << DEVELOPMENT_CARD_NAMES[j];
+      }
+    }
+    std::cout << " development card\n\n";
   }
   return;
 }
