@@ -21,6 +21,22 @@ int RandomAI::freeRoadLocation(GameBoard board, int myIndex, int nextToVillage) 
   return answer;
 }
 
+std::vector<int> RandomAI::discardResources(GameBoard board, PlayerResources resources[], int amountToDiscard) {
+  std::vector<int> toDiscard;
+  for (int i = 0; i < RESOURCE_TYPE_AMOUNT; i++) {
+    toDiscard.push_back(0);
+  }
+  int totalDiscarded = 0;
+  while (totalDiscarded < amountToDiscard) {
+    int target = rand() % RESOURCE_TYPE_AMOUNT;
+    if (resources[index].resources[target] > toDiscard[target]) {
+      toDiscard[target]++;
+      totalDiscarded++;
+    }
+  }
+  return toDiscard;
+}
+
 Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
   Action action;
   PlayerResources myResources = resources[index];

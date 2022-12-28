@@ -10,6 +10,7 @@ public:
   int freeVillageLocation(GameBoard, int);
   int freeRoadLocation(GameBoard, int, int);
   Action getAction(GameBoard, PlayerResources[]);
+  std::vector<int> discardResources(GameBoard, PlayerResources[], int);
   int index;
 };
 

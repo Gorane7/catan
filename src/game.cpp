@@ -84,6 +84,35 @@ void roll(Game& game) {
   int rollB = rand() % 6;
   std::cout << "Player " << game.currentTurn << " rolls " << rollA + 1 << " and " << rollB + 1 << "\n";
   int rollTotal = rollA + rollB + 2;
+  if (rollTotal == 7) {
+    std::cout << "Player " << game.currentTurn << " rolled 7\n";
+    for (int i = 0; i < game.playerAmount; i++) {
+      int thisResourceAmount = 0;
+      for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
+        thisResourceAmount += game.resources[i].resources[j];
+      }
+      std::cout << "Player " << i << " has " << thisResourceAmount << " resources.\n";
+      // Discard resources
+      if (thisResourceAmount > 7) {
+        int amountDiscarded = 0;
+        do {
+          std::vector<int> discarded = game.players[i].discardResources(game.board, game.resources, thisResourceAmount / 2 - amountDiscarded);
+          for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
+            game.resources[i].resources[j] -= discarded[j];
+            amountDiscarded += discarded[j];
+          }
+        } while (amountDiscarded < thisResourceAmount / 2);
+      }
+      // End discard resources
+      thisResourceAmount = 0;
+      for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
+        thisResourceAmount += game.resources[i].resources[j];
+      }
+      std::cout << "After dicarding half resources, player " << i << " has " << thisResourceAmount << " resources.\n";
+    }
+    std::cout << "\n";
+    return;
+  }
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
     if (game.board.villages[i] == -1) {
       continue;
