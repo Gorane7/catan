@@ -339,11 +339,11 @@ void ActualUI::run() {
   std::cout << "\n";
 	do{
     time_point<high_resolution_clock> thisTime = high_resolution_clock::now();
-    if (game.winner == -1 /*&& thisTime - lastTime*/) {
+    if (game.winner == -1 /*&& (duration_cast<milliseconds>(thisTime - lastTime)).count() >= 1000*/) {
       askAction(game);
-      displayState(game);
+      //displayState(game);
       lastTime = thisTime;
-      std::cout << framesSinceLast << " frames per second\n";
+      //std::cout << framesSinceLast << " frames per second\n";
       framesSinceLast = 0;
     }
     if (game.winner != -1 && simsEnded == 0) {

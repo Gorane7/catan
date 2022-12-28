@@ -15,9 +15,9 @@ Game createGame(int playerAmount) {
   GameBoard board = randomBoard(playerAmount);
   game.board = board;
 
-  displayBoardInfo(board);
-  std::cout << "\n\n";
-  displayBoard(board);
+  //displayBoardInfo(board);
+  //std::cout << "\n\n";
+  //displayBoard(board);
 
   for (int i = 0; i < playerAmount; i++) {
     RandomAI ai;
@@ -40,7 +40,7 @@ Game createGame(int playerAmount) {
 
 void giveResourcesForVillage(Game& game, int village) {
   int player = game.board.villages[village];
-  std::cout << "Giving resources to player " << player << " for resources around village " << village << "\n";
+  //std::cout << "Giving resources to player " << player << " for resources around village " << village << "\n";
   int tileX = villageArrToTileX(village);
   int tileY = villageArrToTileY(village);
   bool isUpper = villageArrToUpperBool(village);
@@ -64,21 +64,21 @@ void giveResourcesForVillage(Game& game, int village) {
     int x = arrs[i * 2] + MAP_RADIUS;
     int y = arrs[i * 2 + 1] + MAP_RADIUS;
     if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
-      std::cout << "Neighbour was not in region for which mapping works\n";
+      //std::cout << "Neighbour was not in region for which mapping works\n";
       continue;
     }
     int neighbour = y * MAP_WIDTH + x;
 
-    std::cout << "Neighbour was " << neighbour << "\n";
+    //std::cout << "Neighbour was " << neighbour << "\n";
 
     if (!isValidTile(neighbour)) {
       continue;
     }
 
-    std::cout << "Neighbour was valid\n";
+    //std::cout << "Neighbour was valid\n";
 
     int resource = game.board.tiles[neighbour];
-    std::cout << "Giving resource " << resource - 1 << " to player " << player << "\n";
+    //std::cout << "Giving resource " << resource - 1 << " to player " << player << "\n";
     if (resource > 0) {
       game.resources[player].resources[resource - 1]++;
     }
@@ -93,7 +93,7 @@ void moveRobberAndRob(Game& game) {
   do {
     abstractTileToMoveTo = game.players[game.currentTurn].moveRobber(game.board, game.resources);
   } while (abstractTileToMoveTo == game.board.robberLocation);
-  std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
+  //std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
   game.board.robberLocation = abstractTileToMoveTo;
   // End move robber
   // Start robbing
@@ -106,7 +106,7 @@ void moveRobberAndRob(Game& game) {
     if (randomResource != -1) {
       game.resources[targetPlayer].resources[randomResource]--;
       game.resources[game.currentTurn].resources[randomResource]++;
-      std::cout << "Player " << game.currentTurn << " stole resource " << randomResource << " from player " << targetPlayer << "\n";
+      //std::cout << "Player " << game.currentTurn << " stole resource " << randomResource << " from player " << targetPlayer << "\n";
     }
   }
   // End robbing
@@ -115,16 +115,16 @@ void moveRobberAndRob(Game& game) {
 void roll(Game& game) {
   int rollA = rand() % 6;
   int rollB = rand() % 6;
-  std::cout << "Player " << game.currentTurn << " rolls " << rollA + 1 << " and " << rollB + 1 << "\n";
+  //std::cout << "Player " << game.currentTurn << " rolls " << rollA + 1 << " and " << rollB + 1 << "\n";
   int rollTotal = rollA + rollB + 2;
   if (rollTotal == 7) {
-    std::cout << "Player " << game.currentTurn << " rolled 7\n";
+    //std::cout << "Player " << game.currentTurn << " rolled 7\n";
     for (int i = 0; i < game.playerAmount; i++) {
       int thisResourceAmount = 0;
       for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
         thisResourceAmount += game.resources[i].resources[j];
       }
-      std::cout << "Player " << i << " has " << thisResourceAmount << " resources.\n";
+      //std::cout << "Player " << i << " has " << thisResourceAmount << " resources.\n";
       // Discard resources
       if (thisResourceAmount > 7) {
         int amountDiscarded = 0;
@@ -141,9 +141,9 @@ void roll(Game& game) {
       for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
         thisResourceAmount += game.resources[i].resources[j];
       }
-      std::cout << "After dicarding half resources, player " << i << " has " << thisResourceAmount << " resources.\n";
+      //std::cout << "After dicarding half resources, player " << i << " has " << thisResourceAmount << " resources.\n";
     }
-    std::cout << "\n";
+    //std::cout << "\n";
     moveRobberAndRob(game);
     return;
   }
@@ -189,9 +189,9 @@ void roll(Game& game) {
         game.resources[player].resources[game.board.tiles[neighbour] - 1]++;
         if (game.board.cities[i] != -1) {
           game.resources[player].resources[game.board.tiles[neighbour] - 1]++;
-          std::cout << "Player " << player << " gets 2 of resource " << game.board.tiles[neighbour] - 1 << "\n";
+          //std::cout << "Player " << player << " gets 2 of resource " << game.board.tiles[neighbour] - 1 << "\n";
         } else {
-          std::cout << "Player " << player << " gets resource " << game.board.tiles[neighbour] - 1 << "\n";
+          //std::cout << "Player " << player << " gets resource " << game.board.tiles[neighbour] - 1 << "\n";
         }
       }
     }
@@ -207,7 +207,7 @@ void checkWinner(Game& game) {
 }
 
 void askAction(Game& game) {
-  std::cout << "Asking for action from player " << game.currentTurn << "\n";
+  //std::cout << "Asking for action from player " << game.currentTurn << "\n";
   int prevTurn = game.currentTurn;
   int preVillageAmount = game.board.villageAmount;
   int preRoadAmount = game.board.roadAmount;
@@ -221,7 +221,7 @@ void askAction(Game& game) {
         villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
       }
       while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
-      std::cout << "Player " << game.currentTurn << " placing village\n";
+      //std::cout << "Player " << game.currentTurn << " placing village\n";
       game.board.villages[villageLocation] = game.currentTurn;
       game.playerPoints[game.currentTurn]++;
       game.board.villageAmount++;
@@ -242,7 +242,7 @@ void askAction(Game& game) {
       }
       while (!isValidRoadLocationNextToVillage(game.board, roadLocation, game.currentTurn, villageLocation));
       game.board.roads[roadLocation] = game.currentTurn;
-      std::cout << "Player " << game.currentTurn << " placing village\n";
+      //std::cout << "Player " << game.currentTurn << " placing village\n";
       game.board.roadAmount++;
       if (game.board.roadAmount <= game.playerAmount) {
         game.currentTurn++;
@@ -276,7 +276,7 @@ void askAction(Game& game) {
         game.currentPlayerRolled = false;
       } else if (action.actionType == BUILD_ROAD) {
         if (isValidRoadLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
-          std::cout << "Player " << game.currentTurn << " built road\n";
+          //std::cout << "Player " << game.currentTurn << " built road\n";
           actionValid = true;
           game.board.roads[action.actionLocation] = game.currentTurn;
           game.resources[game.currentTurn].resources[WOOD]--;
@@ -284,14 +284,14 @@ void askAction(Game& game) {
         }
       } else if (action.actionType == TRADE_RESOURCES) {
         if (game.resources[game.currentTurn].resources[action.resourceFrom] >= 4) {
-          std::cout << "Player " << game.currentTurn << " trades 4 " << RESOURCE_NAMES[action.resourceFrom] << " for 1 " << RESOURCE_NAMES[action.resourceTo] << "\n";
+          //std::cout << "Player " << game.currentTurn << " trades 4 " << RESOURCE_NAMES[action.resourceFrom] << " for 1 " << RESOURCE_NAMES[action.resourceTo] << "\n";
           actionValid = true;
           game.resources[game.currentTurn].resources[action.resourceFrom] -= 4;
           game.resources[game.currentTurn].resources[action.resourceTo] += 1;
         }
       } else if (action.actionType == BUILD_VILLAGE) {
         if (isValidVillageLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
-          std::cout << "Player " << game.currentTurn << " builds a village at " << action.actionLocation << "\n";
+          //std::cout << "Player " << game.currentTurn << " builds a village at " << action.actionLocation << "\n";
           actionValid = true;
           game.board.villages[action.actionLocation] = game.currentTurn;
           game.playerPoints[game.currentTurn]++;
@@ -302,7 +302,7 @@ void askAction(Game& game) {
         }
       } else if (action.actionType == BUILD_CITY) {
         if (isValidCityLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
-          std::cout << "Player " << game.currentTurn << " builds a city at " << action.actionLocation << "\n";
+          //std::cout << "Player " << game.currentTurn << " builds a city at " << action.actionLocation << "\n";
           actionValid = true;
           game.board.cities[action.actionLocation] = game.currentTurn;
           game.playerPoints[game.currentTurn]++;
@@ -320,7 +320,7 @@ void askAction(Game& game) {
           game.developmentCardsLeft--;
           game.developmentCardDeck[cardIndex] = game.developmentCardDeck[game.developmentCardsLeft];
           game.resources[game.currentTurn].developmentCards[card]++;
-          std::cout << "Player " << game.currentTurn << " bought development card " << card << "\n";
+          //std::cout << "Player " << game.currentTurn << " bought development card " << card << "\n";
           if (card == VICTORY_POINT_CARD) {
             game.playerPoints[game.currentTurn]++;
           }
@@ -330,13 +330,13 @@ void askAction(Game& game) {
           moveRobberAndRob(game);
           game.resources[game.currentTurn].developmentCards[KNIGHT_CARD]--;
           actionValid = true;
-          std::cout << "Player " << game.currentTurn << " successfully played knight development card.\n";
+          //std::cout << "Player " << game.currentTurn << " successfully played knight development card.\n";
         } else if (action.actionLocation == YEAR_OF_PLENTY_CARD) {
           actionValid = true;
           game.resources[game.currentTurn].developmentCards[YEAR_OF_PLENTY_CARD]--;
           game.resources[game.currentTurn].resources[action.secondaryActionLocation]++;
           game.resources[game.currentTurn].resources[action.tertiaryActionLocation]++;
-          std::cout << "Player " << game.currentTurn << " successfully played year of plenty development card and got resources " << action.secondaryActionLocation << " and " << action.tertiaryActionLocation << "\n";
+          //std::cout << "Player " << game.currentTurn << " successfully played year of plenty development card and got resources " << action.secondaryActionLocation << " and " << action.tertiaryActionLocation << "\n";
         } else if (action.actionLocation == MONOPOLY_CARD) {
           actionValid = true;
           game.resources[game.currentTurn].developmentCards[MONOPOLY_CARD]--;
@@ -345,26 +345,26 @@ void askAction(Game& game) {
             game.resources[i].resources[action.secondaryActionLocation] = 0;
             game.resources[game.currentTurn].resources[action.secondaryActionLocation] += resourceAmount;
           }
-          std::cout << "Player " << game.currentTurn << " successfully played monopoly development card and got all of resource " << action.secondaryActionLocation << "\n";
+          //std::cout << "Player " << game.currentTurn << " successfully played monopoly development card and got all of resource " << action.secondaryActionLocation << "\n";
         } else if (action.actionLocation == ROAD_BUILDING_CARD) {
           if (isValidRoadLocationForPlayer(game.board, action.secondaryActionLocation, game.currentTurn)) {
             game.board.roads[action.secondaryActionLocation] = game.currentTurn;
             if (isValidRoadLocationForPlayer(game.board, action.tertiaryActionLocation, game.currentTurn)) {
               game.board.roads[action.tertiaryActionLocation] = game.currentTurn;
               actionValid = true;
-              std::cout << "Player " << game.currentTurn << " used road building successfully\n";
+              //std::cout << "Player " << game.currentTurn << " used road building successfully\n";
             } else {
               game.board.roads[action.secondaryActionLocation] = -1;
-              std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 1 road\n";
+              //std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 1 road\n";
             }
           } else {
-            std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 0 roads\n";
+            //std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 0 roads\n";
           }
         } else {
-          std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
+          //std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
         }
       } else {
-        std::cout << "Warning, invalid action type " << action.actionType << "\n";
+        //std::cout << "Warning, invalid action type " << action.actionType << "\n";
       }
     }
   }
@@ -376,6 +376,6 @@ void askAction(Game& game) {
   }
 
   game.currentTurn = game.currentTurn % game.playerAmount;
-  std::cout << "Turn passed from player " << prevTurn << " to player " << game.currentTurn << "\n\n";
+  //std::cout << "Turn passed from player " << prevTurn << " to player " << game.currentTurn << "\n\n";
   return;
 }
