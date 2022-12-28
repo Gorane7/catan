@@ -186,15 +186,15 @@ bool villageOnBoard(int x, int y) {
 }
 
 bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) {
-  std::cout << "Was asked if " << villageLocation << " is a valid location for player " << playerID << "\n";
+  //std::cout << "Was asked if " << villageLocation << " is a valid location for player " << playerID << "\n";
   if (board.villages[villageLocation] != -1) {
-    std::cout << "There is already a village from player " << board.villages[villageLocation] << " there\n";
+    //std::cout << "There is already a village from player " << board.villages[villageLocation] << " there\n";
     return false;
   }
   int villageX = villageLocation % (MAP_WIDTH * 2 + 1);
   int villageY = villageLocation / (MAP_WIDTH * 2 + 1);
   if (!villageOnBoard(villageX, villageY)) {
-    std::cout << "Village is so far in corner that it is out of map\n";
+    //std::cout << "Village is so far in corner that it is out of map\n";
     return false;
   }
   int tileX = villageArrToTileX(villageLocation);
@@ -215,11 +215,11 @@ bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) 
       continue;
     }
     if (board.villages[arrs[i]] != -1) {
-      std::cout << "Someone's village was already next to " << villageLocation << "\n";
+      //std::cout << "Someone's village was already next to " << villageLocation << "\n";
       return false;
     }
   }
-  std::cout << "Let's hope so\n";
+  //std::cout << "Let's hope so\n";
   return true;
 }
 

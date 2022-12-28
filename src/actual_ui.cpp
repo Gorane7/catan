@@ -312,6 +312,8 @@ void ActualUI::run() {
 
   int lastTime = time(0);
   int framesSinceLast = 0;
+  int simsEnded = 0;
+  int startTime = time(0);
   std::cout << "\n";
 	do{
     int thisTime = time(0);
@@ -321,6 +323,10 @@ void ActualUI::run() {
       lastTime = thisTime;
       std::cout << framesSinceLast << " frames per second\n";
       framesSinceLast = 0;
+    }
+    if (game.winner != -1 && simsEnded == 0) {
+      simsEnded++;
+      std::cout << "Simulating game took " << time(0) - startTime << " seconds\n";
     }
     framesSinceLast++;
 
