@@ -329,7 +329,23 @@ void askAction(Game& game) {
         if (action.actionLocation == KNIGHT_CARD) {
           moveRobberAndRob(game);
           game.resources[game.currentTurn].developmentCards[KNIGHT_CARD]--;
+          actionValid = true;
           std::cout << "Player " << game.currentTurn << " successfully played knight development card.\n";
+        } else if (action.actionLocation == YEAR_OF_PLENTY_CARD) {
+          actionValid = true;
+          game.resources[game.currentTurn].developmentCards[YEAR_OF_PLENTY_CARD]--;
+          game.resources[game.currentTurn].resources[action.secondaryActionLocation]++;
+          game.resources[game.currentTurn].resources[action.tertiaryActionLocation]++;
+          std::cout << "Player " << game.currentTurn << " successfully played year of plenty development card and got resources " << action.secondaryActionLocation << " and " << action.tertiaryActionLocation << "\n";
+        } else if (action.actionLocation == MONOPOLY_CARD) {
+          actionValid = true;
+          game.resources[game.currentTurn].developmentCards[MONOPOLY_CARD]--;
+          for (int i = 0; i < game.playerAmount; i++) {
+            int resourceAmount = game.resources[i].resources[action.secondaryActionLocation];
+            game.resources[i].resources[action.secondaryActionLocation] = 0;
+            game.resources[game.currentTurn].resources[action.secondaryActionLocation] += resourceAmount;
+          }
+          std::cout << "Player " << game.currentTurn << " successfully played monopoly development card and got all of resource " << action.secondaryActionLocation << "\n";
         } else {
           std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
         }
