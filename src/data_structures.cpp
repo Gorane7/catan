@@ -4,15 +4,14 @@
 
 VillageAsTileXYConnection villageIntToTileXYConnection(int i) {
   VillageAsTileXYConnection converted;
-  int villageX = i % (MAP_WIDTH * 2 + 1);
-  int villageY = i / (MAP_WIDTH * 2 + 1);
+  int villageX = i % MAP_VILLAGE_WIDTH;
   int tileColumn = villageX / 2;
-  int tileRow = villageY;
-  converted.isUpper = (villageX + villageY) % 2 == 0;
+  int tileRow = i / MAP_VILLAGE_WIDTH;
+  converted.isUpper = (villageX + tileRow + 1) % 2;
   if (converted.isUpper) {
     tileRow--;
   }
-  converted.x = tileColumn - (tileRow + 1) / 2 + (MAP_RADIUS - 1) - MAP_RADIUS;
+  converted.x = tileColumn - (tileRow + 1) / 2 - 1;
   converted.y = tileRow - 2;
   return converted;
 }
