@@ -26,6 +26,7 @@ using namespace glm;
 #include "texture.hpp"
 #include "randomAI.hpp"
 #include "terminal_ui.hpp"
+#include "data_structures.hpp"
 
 
 GLuint generateBuffer(GLfloat bufferData[], int size) {
@@ -68,6 +69,12 @@ ActualUI::ActualUI(int playerAmount) {
     road_deltas[i * 3 + 0] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 0];
     road_deltas[i * 3 + 1] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 1];
     road_deltas[i * 3 + 2] = road_delta_vertice_coordinates[road_delta_vertices[i] * 3 + 2];
+  }
+  // Calculate robber vertices from definition
+  for (int i = 0; i < 12 * 3; i++) {
+    robber_deltas[i * 3 + 0] = robber_delta_vertice_coordinates[robber_delta_vertices[i] * 3 + 0];
+    robber_deltas[i * 3 + 1] = robber_delta_vertice_coordinates[robber_delta_vertices[i] * 3 + 1];
+    robber_deltas[i * 3 + 2] = robber_delta_vertice_coordinates[robber_delta_vertices[i] * 3 + 2];
   }
 }
 
@@ -196,6 +203,17 @@ void ActualUI::run() {
     }
   }
 
+  GLfloat robber_vertex_buffer_data[float_per_robber];
+  for (int j = 0; j < float_per_robber; j++) {
+    robber_vertex_buffer_data[j] = robber_deltas[j];
+  }
+
+
+  GLfloat robber_colour_buffer_data[float_per_robber];
+  for (int j = 0; j < float_per_robber; j++) {
+    robber_colour_buffer_data[j] = 0.1f;
+  }
+
 
   // tile amount * triangle per tile * vertex per triangle * float per vertex
   GLfloat tile_vertex_buffer_data[TILE_AMOUNT * float_per_tile];
@@ -306,6 +324,8 @@ void ActualUI::run() {
   GLuint cityColourBuffer = generateBuffer(city_colour_buffer_data, sizeof(city_colour_buffer_data));
   GLuint roadVertexBuffer = generateBuffer(road_vertex_buffer_data, sizeof(road_vertex_buffer_data));
   GLuint roadColourBuffer = generateBuffer(road_colour_buffer_data, sizeof(road_colour_buffer_data));
+  GLuint robberVertexBuffer = generateBuffer(robber_vertex_buffer_data, sizeof(robber_vertex_buffer_data));
+  GLuint robberColourBuffer = generateBuffer(robber_colour_buffer_data, sizeof(robber_colour_buffer_data));
 
   glfwSwapInterval(0);
 
@@ -351,6 +371,23 @@ void ActualUI::run() {
     bindBuffer(numberVertexBuffer, 0, 3);
     bindBuffer(numberColourBuffer, 1, 2);
     glDrawArrays(GL_TRIANGLES, 0, NUMBER_AMOUNT * vertex_per_number);
+
+
+    glUseProgram(programID);
+    bindBuffer(robberVertexBuffer, 0, 3);
+    bindBuffer(robberColourBuffer, 1, 3);
+    int robberLoc = abstractTileToTile(game.board.robberLocation);
+    int x = robberLoc % MAP_WIDTH - MAP_RADIUS;
+    int y = robberLoc / MAP_WIDTH - MAP_RADIUS;
+    glm::mat4 modelRobber = glm::mat4(
+      1.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, 1.0f, 0.0f, 0.0f,
+      0.0f, 0.0f, 1.0f, 0.0f,
+      1.732f * x + 0.866f * y, 1.5f * y, 0.0f, 1.0f
+    );
+    glm::mat4 thisRobber = Projection * View * modelRobber; // Remember, matrix multiplication is the other way around
+    glUniformMatrix4fv(MatrixID, 1, GL_FALSE, &thisRobber[0][0]);
+    glDrawArrays(GL_TRIANGLES, 0, vertex_per_robber);
 
 
     glUseProgram(programID);

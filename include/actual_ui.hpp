@@ -15,9 +15,38 @@ static const int vertex_per_city = 12 * 3;
 static const int float_per_city = vertex_per_city * 3;
 static const int vertex_per_road = 12 * 3;
 static const int float_per_road = vertex_per_road * 3;
+static const int vertex_per_robber = 12 * 3;
+static const int float_per_robber = vertex_per_robber * 3;
 static const float hex_edge_length = 1.0f;
 static const float road_length_half = 0.3f;
 static const float road_radius = 0.05f;
+
+static const float robber_size = 0.2f;
+static const float robber_delta_vertice_coordinates[8 * 3] = {
+  -robber_size, -robber_size, 0.0f,  // left front down
+  -robber_size, robber_size, 0.0f,  // left back down
+  -robber_size, -robber_size, 2 * robber_size,  // left front up
+  -robber_size, robber_size, 2 * robber_size,  // left back up
+  robber_size, -robber_size, 0.0f,  // right front down
+  robber_size, robber_size, 0.0f,  // right back down
+  robber_size, -robber_size, 2 * robber_size,  // right front up
+  robber_size, robber_size, 2 * robber_size,  // right back up
+};
+
+static const int robber_delta_vertices[12 * 3] = {
+  0, 2, 1,
+  1, 3, 2,
+  4, 6, 5,
+  5, 7, 6,
+  0, 4, 5,
+  0, 1, 5,
+  2, 6, 7,
+  2, 3, 7,
+  0, 4, 6,
+  0, 2, 6,
+  1, 5, 7,
+  1, 3, 7
+};
 
 static const float road_delta_vertice_coordinates[8 * 3] = {
   -road_length_half, -road_radius, 0.0f,  // left front down
@@ -240,6 +269,7 @@ public:
 private:
   float tile_deltas[6 * 3 * 3];
   float road_deltas[12 * 3 * 3];
+  float robber_deltas[12 * 3 * 3];
   Game game;
 };
 

@@ -92,5 +92,6 @@ bool isValidTile(int);
 bool villageOnBoard(int, int);
 bool villageOnBoard(int);
 int tileToAbstractTile(int);
+int abstractTileToTile(int);
 
 #endif

@@ -386,3 +386,16 @@ int tileToAbstractTile(int tile) {
   }
   return c;
 }
+
+int abstractTileToTile(int abstractTile) {
+  int c = 0;
+  for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
+    if (isValidTile(i)) {
+      if (c == abstractTile) {
+        return i;
+      }
+      c++;
+    }
+  }
+  return MAP_WIDTH * MAP_WIDTH;
+}
