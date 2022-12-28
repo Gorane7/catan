@@ -5,6 +5,8 @@
 #include <ctime>
 #include <iostream>
 #include <cmath>
+#include <chrono>
+using namespace std::chrono;
 
 // Include GLEW
 #include <GL/glew.h>
@@ -330,13 +332,13 @@ void ActualUI::run() {
   glfwSwapInterval(0);
 
 
-  int lastTime = time(0);
+  time_point<high_resolution_clock> lastTime = high_resolution_clock::now();
+  time_point<high_resolution_clock> startTime = high_resolution_clock::now();
   int framesSinceLast = 0;
   int simsEnded = 0;
-  int startTime = time(0);
   std::cout << "\n";
 	do{
-    int thisTime = time(0);
+    time_point<high_resolution_clock> thisTime = high_resolution_clock::now();
     if (game.winner == -1 /*&& thisTime - lastTime*/) {
       askAction(game);
       displayState(game);
@@ -346,9 +348,10 @@ void ActualUI::run() {
     }
     if (game.winner != -1 && simsEnded == 0) {
       simsEnded++;
-      std::cout << "Simulating game took " << time(0) - startTime << " seconds\n";
+      milliseconds diff = duration_cast<milliseconds>(thisTime - startTime);
+      std::cout << "Simulating game took " << diff.count() << " milliseconds\n";
       std::cout << "Game ended on turn " << game.turnAmount << "\n";
-      std::cout << "Simulating one turn took " << 1000 * (time(0) - startTime) / (float) game.turnAmount << " ms\n";
+      std::cout << "Simulating one turn took " << diff.count() / (float) game.turnAmount << " ms\n";
       std::cout << "Winner was player " << game.winner << "\n";
     }
     framesSinceLast++;
