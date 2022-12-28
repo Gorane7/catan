@@ -87,6 +87,31 @@ void giveResourcesForVillage(Game& game, int village) {
   return;
 }
 
+void moveRobberAndRob(Game& game) {
+  // Move robber
+  int abstractTileToMoveTo;
+  do {
+    abstractTileToMoveTo = game.players[game.currentTurn].moveRobber(game.board, game.resources);
+  } while (abstractTileToMoveTo == game.board.robberLocation);
+  std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
+  game.board.robberLocation = abstractTileToMoveTo;
+  // End move robber
+  // Start robbing
+  int tile = abstractTileToTile(game.board.robberLocation);
+  std::vector<int> villages = villagesNextToTile(game.board, tile);
+  if (villages.size() > 0) {
+    int randomVillage = villages[rand() % villages.size()];
+    int targetPlayer = game.board.villages[randomVillage];
+    int randomResource = chooseRandomResource(game.resources[targetPlayer]);
+    if (randomResource != -1) {
+      game.resources[targetPlayer].resources[randomResource]--;
+      game.resources[game.currentTurn].resources[randomResource]++;
+      std::cout << "Player " << game.currentTurn << " stole resource " << randomResource << " from player " << targetPlayer << "\n";
+    }
+  }
+  // End robbing
+}
+
 void roll(Game& game) {
   int rollA = rand() % 6;
   int rollB = rand() % 6;
@@ -119,28 +144,7 @@ void roll(Game& game) {
       std::cout << "After dicarding half resources, player " << i << " has " << thisResourceAmount << " resources.\n";
     }
     std::cout << "\n";
-    // Move robber
-    int abstractTileToMoveTo;
-    do {
-      abstractTileToMoveTo = game.players[game.currentTurn].moveRobber(game.board, game.resources);
-    } while (abstractTileToMoveTo == game.board.robberLocation);
-    std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
-    game.board.robberLocation = abstractTileToMoveTo;
-    // End move robber
-    // Start robbing
-    int tile = abstractTileToTile(game.board.robberLocation);
-    std::vector<int> villages = villagesNextToTile(game.board, tile);
-    if (villages.size() > 0) {
-      int randomVillage = villages[rand() % villages.size()];
-      int targetPlayer = game.board.villages[randomVillage];
-      int randomResource = chooseRandomResource(game.resources[targetPlayer]);
-      if (randomResource != -1) {
-        game.resources[targetPlayer].resources[randomResource]--;
-        game.resources[game.currentTurn].resources[randomResource]++;
-        std::cout << "Player " << game.currentTurn << " stole resource " << randomResource << " from player " << targetPlayer << "\n";
-      }
-    }
-    // End robbing
+    moveRobberAndRob(game);
     return;
   }
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
@@ -322,7 +326,11 @@ void askAction(Game& game) {
           }
         }
       } else if (action.actionType == PLAY_DEVELOPMENT_CARD) {
-        std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
+        if (action.actionLocation == KNIGHT_CARD) {
+          moveRobberAndRob(game);
+        } else {
+          std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
+        }
       } else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
       }
