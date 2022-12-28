@@ -1,4 +1,5 @@
 #include "game_board.hpp"
+#include "data_structures.hpp"
 
 #include <cstdlib>
 #include <ctime>
@@ -52,27 +53,18 @@ int villageArrToTileY(int i) {
 }
 
 bool areNeighbours(int a, int b) {
-  int tileXa = villageArrToTileX(a);
-  int tileYa = villageArrToTileY(a);
-  bool isUpperA = villageArrToUpperBool(a);
+  VillageAsTileXYConnection villageA = villageIntToTileXYConnection(a);
+  VillageAsTileXYConnection villageB = villageIntToTileXYConnection(b);
 
-  int tileXb = villageArrToTileX(b);
-  int tileYb = villageArrToTileY(b);
-  bool isUpperB = villageArrToUpperBool(b);
-
-  if (isUpperA == isUpperB) {
+  if (villageA.isUpper == villageB.isUpper) {
     return false;
   }
-  if (isUpperB) {
-    int temp = tileXa;
-    tileXa = tileXb;
-    tileXb = temp;
-    temp = tileYa;
-    tileYa = tileYb;
-    tileYb = temp;
+  int dx = villageB.x - villageA.x;
+  int dy = villageB.y - villageA.y;
+  if (villageB.isUpper) {
+    dx = -dx;
+    dy = -dy;
   } // A is upper after this;
-  int dx = tileXb - tileXa;
-  int dy = tileYb - tileYa;
   if (dx == -1 && dy == 2) {
     return true;
   }
