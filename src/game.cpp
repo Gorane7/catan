@@ -346,6 +346,20 @@ void askAction(Game& game) {
             game.resources[game.currentTurn].resources[action.secondaryActionLocation] += resourceAmount;
           }
           std::cout << "Player " << game.currentTurn << " successfully played monopoly development card and got all of resource " << action.secondaryActionLocation << "\n";
+        } else if (action.actionLocation == ROAD_BUILDING_CARD) {
+          if (isValidRoadLocationForPlayer(game.board, action.secondaryActionLocation, game.currentTurn)) {
+            game.board.roads[action.secondaryActionLocation] = game.currentTurn;
+            if (isValidRoadLocationForPlayer(game.board, action.tertiaryActionLocation, game.currentTurn)) {
+              game.board.roads[action.tertiaryActionLocation] = game.currentTurn;
+              actionValid = true;
+              std::cout << "Player " << game.currentTurn << " used road building successfully\n";
+            } else {
+              game.board.roads[action.secondaryActionLocation] = -1;
+              std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 1 road\n";
+            }
+          } else {
+            std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 0 roads\n";
+          }
         } else {
           std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
         }
