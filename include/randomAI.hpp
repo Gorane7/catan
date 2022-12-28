@@ -11,6 +11,7 @@ public:
   int freeRoadLocation(GameBoard, int, int);
   Action getAction(GameBoard, PlayerResources[]);
   std::vector<int> discardResources(GameBoard, PlayerResources[], int);
+  int moveRobber(GameBoard, PlayerResources[]);
   int index;
 };
 

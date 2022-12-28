@@ -21,6 +21,10 @@ int RandomAI::freeRoadLocation(GameBoard board, int myIndex, int nextToVillage) 
   return answer;
 }
 
+int RandomAI::moveRobber(GameBoard board, PlayerResources resources[]) {
+  return rand() % TILE_AMOUNT;
+}
+
 std::vector<int> RandomAI::discardResources(GameBoard board, PlayerResources resources[], int amountToDiscard) {
   std::vector<int> toDiscard;
   for (int i = 0; i < RESOURCE_TYPE_AMOUNT; i++) {

@@ -104,6 +104,14 @@ void roll(Game& game) {
         } while (amountDiscarded < thisResourceAmount / 2);
       }
       // End discard resources
+      // Move robber
+      int abstractTileToMoveTo;
+      do {
+        abstractTileToMoveTo = game.players[game.currentTurn].moveRobber(game.board, game.resources);
+      } while (abstractTileToMoveTo == game.board.robberLocation);
+      std::cout << "Player " << game.currentTurn << " moved robber from " << game.board.robberLocation << " to " << abstractTileToMoveTo << "\n";
+      game.board.robberLocation = abstractTileToMoveTo;
+      // End move robber
       thisResourceAmount = 0;
       for (int j = 0; j < RESOURCE_TYPE_AMOUNT; j++) {
         thisResourceAmount += game.resources[i].resources[j];
