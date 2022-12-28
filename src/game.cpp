@@ -27,6 +27,13 @@ Game createGame(int playerAmount) {
     game.resources[i] = resources;
     game.playerPoints[i] = 0;
   }
+  int c = 0;
+  for (int i = 0; i < DEVELOPMENT_CARD_TYPE_AMOUNT; i++) {
+    for (int j = 0; j < DEVELOPMENT_CARD_AMOUNTS_BY_TYPE[i]; j++) {
+      game.developmentCardDeck[c] = i;
+      c++;
+    }
+  }
   return game;
 }
 

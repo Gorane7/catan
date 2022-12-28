@@ -10,6 +10,9 @@ PlayerResources createResources() {
   for (int i = 0; i < RESOURCE_TYPE_AMOUNT; i++) {
     resources.resources[i] = 0;
   }
+  for (int i = 0; i < DEVELOPMENT_CARD_TYPE_AMOUNT; i++) {
+    resources.developmentCards[i] = 0;
+  }
   return resources;
 }
 

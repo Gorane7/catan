@@ -14,6 +14,9 @@ static const int MAX_PLAYERS = 4;
 static const int VILLAGE_PLACED = 0;
 static const int ROAD_PLACED = 1;
 
+static const int DEVELOPMENT_CARD_AMOUNTS_BY_TYPE[DEVELOPMENT_CARD_TYPE_AMOUNT] = {14, 5, 2, 2, 2};
+static const int DEVELOPMENT_CARD_AMOUNT = 25;
+
 struct Game {
   int playerAmount;
   GameBoard board;
@@ -25,6 +28,7 @@ struct Game {
   int playerPoints[MAX_PLAYERS];
   int winner;
   int turnAmount;
+  int developmentCardDeck[DEVELOPMENT_CARD_AMOUNT];
 };
 
 Game createGame(int);
