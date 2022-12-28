@@ -44,12 +44,30 @@ std::vector<int> RandomAI::discardResources(GameBoard board, PlayerResources res
 Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
   Action action;
   PlayerResources myResources = resources[index];
-  action.actionType = END_TURN;
-  int tradeFrom = rand() % RESOURCE_TYPE_AMOUNT;
-  if (myResources.resources[tradeFrom] >= 4) {
-    action.actionType = TRADE_RESOURCES;
-    action.resourceFrom = tradeFrom;
-    action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
+
+  if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3) {
+    std::vector<int> citySpots = availableCityBuildingLocations(board, index);
+    if (citySpots.size() > 0) {
+      action.actionType = BUILD_CITY;
+      action.actionLocation = citySpots[rand() % citySpots.size()];
+      return action;
+    }
+  }
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[WHEAT] >= 1) {
+    std::vector<int> villageSpots = availableVillageSpots(board, index);
+    if (villageSpots.size() > 0) {
+      action.actionType = BUILD_VILLAGE;
+      action.actionLocation = villageSpots[rand() % villageSpots.size()];
+      return action;
+    }
+  }
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
+    std::vector<int> roadSpots = availableRoadSpots(board, index);
+    if (roadSpots.size() > 0) {
+      action.actionType = BUILD_ROAD;
+      action.actionLocation = roadSpots[rand() % roadSpots.size()];
+      return action;
+    }
   }
   std::vector<int> resourcesThatHasMany;
   for (int i = 0; i < RESOURCE_TYPE_AMOUNT; i++) {
@@ -62,27 +80,14 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
     action.actionType = TRADE_RESOURCES;
     action.resourceFrom = resourcesThatHasMany[tradeFromIndex];
     action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
+    return action;
   }
-  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
-    std::vector<int> roadSpots = availableRoadSpots(board, index);
-    if (roadSpots.size() > 0) {
-      action.actionType = BUILD_ROAD;
-      action.actionLocation = roadSpots[rand() % roadSpots.size()];
-    }
+  int tradeFrom = rand() % RESOURCE_TYPE_AMOUNT;
+  if (myResources.resources[tradeFrom] >= 4) {
+    action.actionType = TRADE_RESOURCES;
+    action.resourceFrom = tradeFrom;
+    action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
   }
-  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[WHEAT] >= 1) {
-    std::vector<int> villageSpots = availableVillageSpots(board, index);
-    if (villageSpots.size() > 0) {
-      action.actionType = BUILD_VILLAGE;
-      action.actionLocation = villageSpots[rand() % villageSpots.size()];
-    }
-  }
-  if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3) {
-    std::vector<int> citySpots = availableCityBuildingLocations(board, index);
-    if (citySpots.size() > 0) {
-      action.actionType = BUILD_CITY;
-      action.actionLocation = citySpots[rand() % citySpots.size()];
-    }
-  }
+  action.actionType = END_TURN;
   return action;
 }
