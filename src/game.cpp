@@ -321,6 +321,8 @@ void askAction(Game& game) {
             game.playerPoints[game.currentTurn]++;
           }
         }
+      } else if (action.actionType == PLAY_DEVELOPMENT_CARD) {
+        std::cout << "Player tried to play development card " << action.actionType << ", but functionality for that hasn't been implemented yet\n";
       } else {
         std::cout << "Warning, invalid action type " << action.actionType << "\n";
       }

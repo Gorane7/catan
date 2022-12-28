@@ -45,6 +45,23 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[], int dev
   Action action;
   PlayerResources myResources = resources[index];
 
+  int developmentCardType = rand() % DEVELOPMENT_CARD_TYPE_AMOUNT;
+  if (myResources.developmentCards[developmentCardType] > 0) {
+    action.actionType = PLAY_DEVELOPMENT_CARD;
+    action.actionLocation = developmentCardType;
+    if (developmentCardType == KNIGHT_CARD) {
+      action.secondaryActionLocation = rand() % TILE_AMOUNT;
+    } else if (developmentCardType == ROAD_BUILDING_CARD) {
+      action.secondaryActionLocation = rand() % ROAD_ARRAY_LENGTH;
+      action.tertiaryActionLocation = rand() % ROAD_ARRAY_LENGTH;
+    } else if (developmentCardType == YEAR_OF_PLENTY_CARD) {
+      action.secondaryActionLocation = rand() % RESOURCE_TYPE_AMOUNT;
+      action.tertiaryActionLocation = rand() % RESOURCE_TYPE_AMOUNT;
+    } else if (developmentCardType == MONOPOLY_CARD) {
+      action.secondaryActionLocation = rand() % RESOURCE_TYPE_AMOUNT;
+    }
+  }
+
   if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3) {
     std::vector<int> citySpots = availableCityBuildingLocations(board, index);
     if (citySpots.size() > 0) {
