@@ -11,6 +11,7 @@ Game createGame(int playerAmount) {
   game.currentTurn = 0;
   game.currentPlayerRolled = false;
   game.winner = -1;
+  game.turnAmount = 0;
   GameBoard board = randomBoard(playerAmount);
   game.board = board;
 
@@ -129,7 +130,6 @@ void roll(Game& game) {
         } else {
           std::cout << "Player " << player << " gets resource " << game.board.tiles[neighbour] - 1 << "\n";
         }
-
       }
     }
   }
@@ -196,6 +196,7 @@ void askAction(Game& game) {
     // normal turn
     if (!game.currentPlayerRolled) {
       roll(game);
+      game.turnAmount++;
       game.currentPlayerRolled = true;
       if (game.currentTurn == 0) {
         for (int k = 0; k < 5; k++) {

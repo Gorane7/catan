@@ -24,6 +24,7 @@ struct Game {
   bool currentPlayerRolled;
   int playerPoints[MAX_PLAYERS];
   int winner;
+  int turnAmount;
 };
 
 Game createGame(int);

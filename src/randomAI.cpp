@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <ctime>
 #include <iostream>
+#include <vector>
+
 
 int RandomAI::freeVillageLocation(GameBoard board, int myIndex) {
   int answer = rand() % VILLAGE_ARRAY_LENGTH;
@@ -27,6 +29,18 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
   if (myResources.resources[tradeFrom] >= 4) {
     action.actionType = TRADE_RESOURCES;
     action.resourceFrom = tradeFrom;
+    action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
+  }
+  std::vector<int> resourcesThatHasMany;
+  for (int i = 0; i < RESOURCE_TYPE_AMOUNT; i++) {
+    if (myResources.resources[i] >= 7) {
+      resourcesThatHasMany.push_back(i);
+    }
+  }
+  if (resourcesThatHasMany.size() > 0) {
+    int tradeFromIndex = rand() % resourcesThatHasMany.size();
+    action.actionType = TRADE_RESOURCES;
+    action.resourceFrom = resourcesThatHasMany[tradeFromIndex];
     action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
   }
   if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && hasRoadSpot(board, index)) {

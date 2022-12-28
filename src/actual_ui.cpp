@@ -327,7 +327,9 @@ void ActualUI::run() {
     if (game.winner != -1 && simsEnded == 0) {
       simsEnded++;
       std::cout << "Simulating game took " << time(0) - startTime << " seconds\n";
-      std::cout << "Winner was player " << game.winner << "\n"; 
+      std::cout << "Game ended on turn " << game.turnAmount << "\n";
+      std::cout << "Simulating one turn took " << 1000 * (time(0) - startTime) / (float) game.turnAmount << " ms\n";
+      std::cout << "Winner was player " << game.winner << "\n";
     }
     framesSinceLast++;
 
