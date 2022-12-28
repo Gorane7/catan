@@ -2,6 +2,7 @@
 #define GAME_BOARD_HPP
 
 #include <string>
+#include <vector>
 #include "constants.hpp"
 
 
@@ -84,6 +85,9 @@ bool isValidCityLocationForPlayer(GameBoard, int, int);
 bool hasVillageSpot(GameBoard, int);
 bool hasRoadSpot(GameBoard, int);
 bool hasCityBuildingLocation(GameBoard, int);
+std::vector<int> availableVillageSpots(GameBoard, int);
+std::vector<int> availableRoadSpots(GameBoard, int);
+std::vector<int> availableCityBuildingLocations(GameBoard, int);
 bool isValidTile(int);
 bool villageOnBoard(int, int);
 bool villageOnBoard(int);

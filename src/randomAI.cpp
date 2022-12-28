@@ -43,17 +43,26 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[]) {
     action.resourceFrom = resourcesThatHasMany[tradeFromIndex];
     action.resourceTo = rand() % RESOURCE_TYPE_AMOUNT;
   }
-  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && hasRoadSpot(board, index)) {
-    action.actionType = BUILD_ROAD;
-    action.actionLocation = rand() % ROAD_ARRAY_LENGTH;
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1) {
+    std::vector<int> roadSpots = availableRoadSpots(board, index);
+    if (roadSpots.size() > 0) {
+      action.actionType = BUILD_ROAD;
+      action.actionLocation = roadSpots[rand() % roadSpots.size()];
+    }
   }
-  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[WHEAT] >= 1 && hasVillageSpot(board, index)) {
-    action.actionType = BUILD_VILLAGE;
-    action.actionLocation = rand() % VILLAGE_ARRAY_LENGTH;
+  if (myResources.resources[WOOD] >= 1 && myResources.resources[CLAY] >= 1 && myResources.resources[SHEEP] >= 1 && myResources.resources[WHEAT] >= 1) {
+    std::vector<int> villageSpots = availableVillageSpots(board, index);
+    if (villageSpots.size() > 0) {
+      action.actionType = BUILD_VILLAGE;
+      action.actionLocation = villageSpots[rand() % villageSpots.size()];
+    }
   }
-  if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3 && hasCityBuildingLocation(board, index)) {
-    action.actionType = BUILD_CITY;
-    action.actionLocation = rand() % VILLAGE_ARRAY_LENGTH;
+  if (myResources.resources[WHEAT] >= 2 && myResources.resources[ROCK] >= 3) {
+    std::vector<int> citySpots = availableCityBuildingLocations(board, index);
+    if (citySpots.size() > 0) {
+      action.actionType = BUILD_CITY;
+      action.actionLocation = citySpots[rand() % citySpots.size()];
+    }
   }
   return action;
 }

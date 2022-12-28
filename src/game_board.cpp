@@ -147,6 +147,16 @@ bool villageLocationNextToPlayersRoad(GameBoard board, int villageLocation, int 
   return false;
 }
 
+std::vector<int> availableVillageSpots(GameBoard board, int playerID) {
+  std::vector<int> villageSpots;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+    if (isValidVillageLocationForPlayer(board, i, playerID)) {
+      villageSpots.push_back(i);
+    }
+  }
+  return villageSpots;
+}
+
 bool hasVillageSpot(GameBoard board, int playerID) {
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
     if (isValidVillageLocationForPlayer(board, i, playerID)) {
@@ -154,6 +164,16 @@ bool hasVillageSpot(GameBoard board, int playerID) {
     }
   }
   return false;
+}
+
+std::vector<int> availableRoadSpots(GameBoard board, int playerID) {
+  std::vector<int> roadSpots;
+  for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
+    if (isValidRoadLocationForPlayer(board, i, playerID)) {
+      roadSpots.push_back(i);
+    }
+  }
+  return roadSpots;
 }
 
 bool hasRoadSpot(GameBoard board, int playerID) {
@@ -232,6 +252,16 @@ bool isValidTile(int i) {
   int x = i % MAP_WIDTH - MAP_RADIUS;
   int y = i / MAP_WIDTH - MAP_RADIUS;
   return !(x + y > MAP_RADIUS || x + y < - MAP_RADIUS);
+}
+
+std::vector<int> availableCityBuildingLocations(GameBoard board, int index) {
+  std::vector<int> cityBuildingLocations;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
+    if (board.villages[i] == index && board.cities[i] == -1) {
+      cityBuildingLocations.push_back(i);
+    }
+  }
+  return cityBuildingLocations;
 }
 
 bool hasCityBuildingLocation(GameBoard board, int index) {
