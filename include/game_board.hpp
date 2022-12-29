@@ -68,11 +68,6 @@ struct GameBoard {
   int roadAmount;
 };
 
-int villageArrayLocation(bool, int, int);
-bool villageArrToUpperBool(int);
-int villageArrToTileX(int);
-int villageArrToTileY(int);
-
 int numberAtTile(GameBoard, int);
 GameBoard randomBoard(int);
 GameBoard randomBoard(int, bool);

@@ -15,13 +15,20 @@ struct VillageAsGridXY {
   int y;
 };
 
+struct VillageAsInt {
+  int i;
+};
+
 VillageAsTileXYConnection villageIntToTileXYConnection(int);
 int villageTileXYConnectionToInt(VillageAsTileXYConnection);
 
 VillageAsGridXY villageIntToGridXY(int);
 int villageGridXYToInt(VillageAsGridXY);
 
-std::vector<int> getVillageNeighbours(int);
+VillageAsInt villageIntToCheckedInt(int);
+int villageCheckedIntToInt(VillageAsInt);
+
+std::vector<int> getVillageNeighbours(VillageAsInt);
 bool areVillagesNeighbours(int, int);
 
 bool isValidRoadLocationNextToVillage(int, int, int);

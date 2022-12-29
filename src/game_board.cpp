@@ -156,7 +156,8 @@ bool isValidVillageLocation(GameBoard board, int villageLocation) {
   if (!villageOnBoard(villageLocation)) {
     return false;
   }
-  std::vector<int> neighbours = getVillageNeighbours(villageLocation);
+  VillageAsInt village = villageIntToCheckedInt(villageLocation);
+  std::vector<int> neighbours = getVillageNeighbours(village);
   for (int i = 0; i < neighbours.size(); i++) {
     if (board.villages[neighbours[i]] != -1) {
       return false;

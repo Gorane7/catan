@@ -45,12 +45,22 @@ int villageTileXYConnectionToInt(VillageAsTileXYConnection village) {
   return villageY * (MAP_WIDTH * 2 + 1) + villageX;
 }
 
+VillageAsInt villageIntToCheckedInt(int i) {
+  VillageAsInt village;
+  village.i = i;
+  return village;
+}
+
+int villageCheckedIntToInt(VillageAsInt village) {
+  return village.i;
+}
+
 bool villageOnBoard(int x, int y) {
   return !(x + y < 2 || MAP_WIDTH * 2 - x + y < 2 || MAP_WIDTH - y + x < 2 || MAP_WIDTH * 3 - y - x < 2);
 }
 
 bool villageOnBoard(int village) {
-  return villageOnBoard(village % (MAP_WIDTH * 2 + 1), village / (MAP_WIDTH * 2 + 1));
+  return villageOnBoard(village % MAP_VILLAGE_WIDTH, village / MAP_VILLAGE_WIDTH);
 }
 
 bool isValidRoadLocationNextToVillage(int roadLocation, int playerID, int villageLocation) {
@@ -119,8 +129,8 @@ bool isValidRoadLocation(int roadLocation) {
   return areVillagesNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB);
 }
 
-std::vector<int> getVillageNeighbours(int villageLocation) {
-  VillageAsTileXYConnection village = villageIntToTileXYConnection(villageLocation);
+std::vector<int> getVillageNeighbours(VillageAsInt villageLocation) {
+  VillageAsTileXYConnection village = villageIntToTileXYConnection(villageLocation.i);
   std::array<int, 3> neighbours;
   if (village.isUpper) {
     neighbours[0] = villageTileXYConnectionToInt(getSouthWestVillageNeighbour(village));
