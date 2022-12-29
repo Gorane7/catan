@@ -9,55 +9,6 @@ GameBoard randomBoard(int playerAmount) {
   return randomBoard(playerAmount, false);
 }
 
-int villageArrayLocation(bool isUpper, int x, int y) {
-  int tileRow = y + 2;
-  int tileColumn = x + (tileRow + 1) / 2 - (MAP_RADIUS - 1) + MAP_RADIUS;
-  int villageY = tileRow;
-  int villageX = 2 * tileColumn;
-  if (isUpper) {
-    villageY++;
-    if ((villageX + villageY) % 2 == 1) {
-      villageX++;
-    }
-  } else {
-    if ((villageX + villageY) % 2 != 1) {
-      villageX++;
-    }
-  }
-  return villageY * (MAP_WIDTH * 2 + 1) + villageX;
-}
-
-bool areNeighbours(int a, int b) {
-  VillageAsTileXYConnection villageA = villageIntToTileXYConnection(a);
-  VillageAsTileXYConnection villageB = villageIntToTileXYConnection(b);
-
-  if (villageA.isUpper == villageB.isUpper) {
-    return false;
-  }
-  int dx = villageB.x - villageA.x;
-  int dy = villageB.y - villageA.y;
-  if (villageB.isUpper) {
-    dx = -dx;
-    dy = -dy;
-  } // A is upper after this;
-  if (dx == -1 && dy == 2) {
-    return true;
-  }
-  if (dx == 0 && dy == 1) {
-    return true;
-  }
-  if (dx == -1 && dy == 1) {
-    return true;
-  }
-  return false;
-}
-
-bool isValidRoadLocationNextToVillage(GameBoard board, int roadLocation, int playerID, int villageLocation) {
-  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
-  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
-  return villageOnBoard(villageA) && villageOnBoard(villageB) && areNeighbours(villageA, villageB) && (villageA == villageLocation || villageB == villageLocation);
-}
-
 bool roadConnectsToPlayersVillage(GameBoard board, int roadLocation, int playerID) {
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
@@ -72,7 +23,7 @@ bool roadConnectsToPlayersRoad(GameBoard board, int roadLocation, int playerID) 
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
-    if (!villageLocationIsHostile(board, villageA, playerID) && areNeighbours(i, villageA)) {
+    if (!villageLocationIsHostile(board, villageA, playerID) && areVillagesNeighbours(i, villageA)) {
       if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageA] == playerID) {
         return true;
       }
@@ -80,7 +31,7 @@ bool roadConnectsToPlayersRoad(GameBoard board, int roadLocation, int playerID) 
         return true;
       }
     }
-    if (!villageLocationIsHostile(board, villageB, playerID) && areNeighbours(i, villageB)) {
+    if (!villageLocationIsHostile(board, villageB, playerID) && areVillagesNeighbours(i, villageB)) {
       if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageB] == playerID) {
         return true;
       }
@@ -141,18 +92,12 @@ bool roadLocationIsEmpty(GameBoard board, int roadLocation) {
 bool isValidRoadLocationForPlayer(GameBoard board, int roadLocation, int playerID) {
   int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
   int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
-  return areNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB) && (roadConnectsToPlayersRoad(board, roadLocation, playerID) || roadConnectsToPlayersVillage(board, roadLocation, playerID)) && roadLocationIsEmpty(board, roadLocation);
-}
-
-bool isValidRoadLocation(int roadLocation) {
-  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
-  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
-  return areNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB);
+  return areVillagesNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB) && (roadConnectsToPlayersRoad(board, roadLocation, playerID) || roadConnectsToPlayersVillage(board, roadLocation, playerID)) && roadLocationIsEmpty(board, roadLocation);
 }
 
 bool villageLocationNextToPlayersRoad(GameBoard board, int villageLocation, int playerID) {
   for (int i = 0; i < VILLAGE_ARRAY_LENGTH; i++) {
-    if (!areNeighbours(i, villageLocation)) {
+    if (!areVillagesNeighbours(i, villageLocation)) {
       continue;
     }
     if (board.roads[i * VILLAGE_ARRAY_LENGTH + villageLocation] == playerID || board.roads[villageLocation * VILLAGE_ARRAY_LENGTH + i] == playerID) {
@@ -204,14 +149,6 @@ bool isValidVillageLocationForPlayer(GameBoard board, int villageLocation, int p
   return isValidVillageLocation(board, villageLocation) && villageLocationNextToPlayersRoad(board, villageLocation, playerID);
 }
 
-bool villageOnBoard(int village) {
-  return villageOnBoard(village % (MAP_WIDTH * 2 + 1), village / (MAP_WIDTH * 2 + 1));
-}
-
-bool villageOnBoard(int x, int y) {
-  return !(x + y < 2 || MAP_WIDTH * 2 - x + y < 2 || MAP_WIDTH - y + x < 2 || MAP_WIDTH * 3 - y - x < 2);
-}
-
 bool isValidVillageLocation(GameBoard board, int villageLocation) {
   if (board.villages[villageLocation] != -1) {
     return false;
@@ -239,12 +176,6 @@ int numberAtTile(GameBoard board, int tile) {
     }
   }
   return board.numbers[tile - desertsFound];
-}
-
-bool isValidTile(int i) {
-  int x = i % MAP_WIDTH - MAP_RADIUS;
-  int y = i / MAP_WIDTH - MAP_RADIUS;
-  return !(x + y > MAP_RADIUS || x + y < - MAP_RADIUS);
 }
 
 std::vector<int> availableCityBuildingLocations(GameBoard board, int index) {
@@ -368,27 +299,4 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
     }
   }
   return board;
-}
-
-int tileToAbstractTile(int tile) {
-  int c = 0;
-  for (int i = 0; i < tile; i++) {
-    if (isValidTile(i)) {
-      c++;
-    }
-  }
-  return c;
-}
-
-int abstractTileToTile(int abstractTile) {
-  int c = 0;
-  for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
-    if (isValidTile(i)) {
-      if (c == abstractTile) {
-        return i;
-      }
-      c++;
-    }
-  }
-  return MAP_WIDTH * MAP_WIDTH;
 }

@@ -214,7 +214,7 @@ void doRoadPlacement(Game& game) {
   do {
     roadLocation = game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation);
   }
-  while (!isValidRoadLocationNextToVillage(game.board, roadLocation, game.currentTurn, villageLocation));
+  while (!isValidRoadLocationNextToVillage(roadLocation, game.currentTurn, villageLocation));
 
   game.board.roads[roadLocation] = game.currentTurn;
   game.board.roadAmount++;

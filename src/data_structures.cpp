@@ -45,6 +45,80 @@ int villageTileXYConnectionToInt(VillageAsTileXYConnection village) {
   return villageY * (MAP_WIDTH * 2 + 1) + villageX;
 }
 
+bool villageOnBoard(int x, int y) {
+  return !(x + y < 2 || MAP_WIDTH * 2 - x + y < 2 || MAP_WIDTH - y + x < 2 || MAP_WIDTH * 3 - y - x < 2);
+}
+
+bool villageOnBoard(int village) {
+  return villageOnBoard(village % (MAP_WIDTH * 2 + 1), village / (MAP_WIDTH * 2 + 1));
+}
+
+bool isValidRoadLocationNextToVillage(int roadLocation, int playerID, int villageLocation) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  return villageOnBoard(villageA) && villageOnBoard(villageB) && areVillagesNeighbours(villageA, villageB) && (villageA == villageLocation || villageB == villageLocation);
+}
+
+bool areVillagesNeighbours(int a, int b) {
+  VillageAsTileXYConnection villageA = villageIntToTileXYConnection(a);
+  VillageAsTileXYConnection villageB = villageIntToTileXYConnection(b);
+
+  if (villageA.isUpper == villageB.isUpper) {
+    return false;
+  }
+  int dx = villageB.x - villageA.x;
+  int dy = villageB.y - villageA.y;
+  if (villageB.isUpper) {
+    dx = -dx;
+    dy = -dy;
+  } // A is upper after this;
+  if (dx == -1 && dy == 2) {
+    return true;
+  }
+  if (dx == 0 && dy == 1) {
+    return true;
+  }
+  if (dx == -1 && dy == 1) {
+    return true;
+  }
+  return false;
+}
+
+int tileToAbstractTile(int tile) {
+  int c = 0;
+  for (int i = 0; i < tile; i++) {
+    if (isValidTile(i)) {
+      c++;
+    }
+  }
+  return c;
+}
+
+int abstractTileToTile(int abstractTile) {
+  int c = 0;
+  for (int i = 0; i < MAP_WIDTH * MAP_WIDTH; i++) {
+    if (isValidTile(i)) {
+      if (c == abstractTile) {
+        return i;
+      }
+      c++;
+    }
+  }
+  return MAP_WIDTH * MAP_WIDTH;
+}
+
+bool isValidTile(int i) {
+  int x = i % MAP_WIDTH - MAP_RADIUS;
+  int y = i / MAP_WIDTH - MAP_RADIUS;
+  return !(x + y > MAP_RADIUS || x + y < - MAP_RADIUS);
+}
+
+bool isValidRoadLocation(int roadLocation) {
+  int villageA = roadLocation / VILLAGE_ARRAY_LENGTH;
+  int villageB = roadLocation % VILLAGE_ARRAY_LENGTH;
+  return areVillagesNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB);
+}
+
 std::vector<int> getVillageNeighbours(int villageLocation) {
   VillageAsTileXYConnection village = villageIntToTileXYConnection(villageLocation);
   std::array<int, 3> neighbours;

@@ -77,7 +77,6 @@ int numberAtTile(GameBoard, int);
 GameBoard randomBoard(int);
 GameBoard randomBoard(int, bool);
 bool isValidVillageLocation(GameBoard, int);
-bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidRoadLocationForPlayer(GameBoard, int, int);
 bool isValidVillageLocationForPlayer(GameBoard, int, int);
 bool isValidCityLocationForPlayer(GameBoard, int, int);
@@ -87,11 +86,6 @@ bool hasCityBuildingLocation(GameBoard, int);
 std::vector<int> availableVillageSpots(GameBoard, int);
 std::vector<int> availableRoadSpots(GameBoard, int);
 std::vector<int> availableCityBuildingLocations(GameBoard, int);
-bool isValidTile(int);
-bool villageOnBoard(int, int);
-bool villageOnBoard(int);
-int tileToAbstractTile(int);
-int abstractTileToTile(int);
 std::vector<int> villagesNextToTile(GameBoard, int);
 
 #endif
