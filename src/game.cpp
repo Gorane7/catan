@@ -180,7 +180,7 @@ void doVillagePlacement(Game& game) {
   do {
     villageLocation = game.players[game.currentTurn].freeVillageLocation(game.board, game.currentTurn);
   }
-  while (!isValidVillageLocation(game.board, villageLocation, game.currentTurn));
+  while (!isValidVillageLocation(game.board, villageLocation));
   //std::cout << "Player " << game.currentTurn << " placing village\n";
   game.board.villages[villageLocation] = game.currentTurn;
   game.playerPoints[game.currentTurn]++;

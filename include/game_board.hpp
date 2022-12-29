@@ -6,7 +6,6 @@
 #include "constants.hpp"
 
 
-const int VILLAGE_ARRAY_LENGTH = (MAP_WIDTH + 1) * (2 * MAP_WIDTH + 1);
 const int ROAD_ARRAY_LENGTH = VILLAGE_ARRAY_LENGTH * VILLAGE_ARRAY_LENGTH;
 
 const int TILE_AMOUNT = 19;
@@ -77,7 +76,7 @@ int villageArrToTileY(int);
 int numberAtTile(GameBoard, int);
 GameBoard randomBoard(int);
 GameBoard randomBoard(int, bool);
-bool isValidVillageLocation(GameBoard, int, int);
+bool isValidVillageLocation(GameBoard, int);
 bool isValidRoadLocationNextToVillage(GameBoard, int, int, int);
 bool isValidRoadLocationForPlayer(GameBoard, int, int);
 bool isValidVillageLocationForPlayer(GameBoard, int, int);

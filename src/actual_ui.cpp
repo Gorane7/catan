@@ -401,15 +401,13 @@ void ActualUI::run() {
         continue;
       }
 
-      int tileX = villageArrToTileX(i);
-      int tileY = villageArrToTileY(i);
-      bool isUpper = villageArrToUpperBool(i);
+      VillageAsTileXYConnection village = villageIntToTileXYConnection(i);
 
       glm::mat4 modelVillage = glm::mat4(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
-        1.732f * tileX + 0.866f * tileY, 1.5f * tileY + (isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
+        1.732f * village.x + 0.866f * village.y, 1.5f * village.y + (village.isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
       );
       glm::mat4 thisVillage = Projection * View * modelVillage; // Remember, matrix multiplication is the other way around
 
@@ -426,15 +424,13 @@ void ActualUI::run() {
         continue;
       }
 
-      int tileX = villageArrToTileX(i);
-      int tileY = villageArrToTileY(i);
-      bool isUpper = villageArrToUpperBool(i);
+      VillageAsTileXYConnection village = villageIntToTileXYConnection(i);
 
       glm::mat4 modelVillage = glm::mat4(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
-        1.732f * tileX + 0.866f * tileY, 1.5f * tileY + (isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
+        1.732f * village.x + 0.866f * village.y, 1.5f * village.y + (village.isUpper ? 1.0f : -1.0f), 0.0f, 1.0f
       );
       glm::mat4 thisVillage = Projection * View * modelVillage; // Remember, matrix multiplication is the other way around
 
@@ -451,25 +447,21 @@ void ActualUI::run() {
         continue;
       }
 
-      int villageA = i / VILLAGE_ARRAY_LENGTH;
-      int villageB = i % VILLAGE_ARRAY_LENGTH;
+      int iA = i / VILLAGE_ARRAY_LENGTH;
+      int iB = i % VILLAGE_ARRAY_LENGTH;
 
-      int tileXA = villageArrToTileX(villageA);
-      int tileYA = villageArrToTileY(villageA);
-      bool isUpperA = villageArrToUpperBool(villageA);
-      int tileXB = villageArrToTileX(villageB);
-      int tileYB = villageArrToTileY(villageB);
-      bool isUpperB = villageArrToUpperBool(villageB);
+      VillageAsTileXYConnection villageA = villageIntToTileXYConnection(iA);
+      VillageAsTileXYConnection villageB = villageIntToTileXYConnection(iB);
 
-      float dx = 0.866f * (tileXA - tileXB) + 0.433f * (tileYA - tileYB);
-      float dy = 0.75f * (tileYA - tileYB) + (isUpperA ? 0.5f : -0.5f) - (isUpperB ? 0.5f : -0.5f);
+      float dx = 0.866f * (villageA.x - villageB.x) + 0.433f * (villageA.y - villageB.y);
+      float dy = 0.75f * (villageA.y - villageB.y) + (villageA.isUpper ? 0.5f : -0.5f) - (villageB.isUpper ? 0.5f : -0.5f);
       float angle = std::atan2(dy, dx);
 
       glm::mat4 modelRoad = glm::mat4(
         1.0f, 0.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 1.0f, 0.0f,
-        0.866f * (tileXA + tileXB) + 0.433f * (tileYA + tileYB), 0.75f * (tileYA + tileYB) + (isUpperA ? 0.5f : -0.5f) + (isUpperB ? 0.5f : -0.5f), 0.0f, 1.0f
+        0.866f * (villageA.x + villageB.x) + 0.433f * (villageA.y + villageB.y), 0.75f * (villageA.y + villageB.y) + (villageA.isUpper ? 0.5f : -0.5f) + (villageB.isUpper ? 0.5f : -0.5f), 0.0f, 1.0f
       );
 
       glm::vec3 myRotationAxis(0.0f, 0.0f, 1.0f);

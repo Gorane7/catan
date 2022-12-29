@@ -27,31 +27,6 @@ int villageArrayLocation(bool isUpper, int x, int y) {
   return villageY * (MAP_WIDTH * 2 + 1) + villageX;
 }
 
-bool villageArrToUpperBool(int i) {
-  return (i % (MAP_WIDTH * 2 + 1) + i / (MAP_WIDTH * 2 + 1)) % 2 == 0;
-}
-
-int villageArrToTileX(int i) {
-  int villageX = i % (MAP_WIDTH * 2 + 1);
-  int villageY = i / (MAP_WIDTH * 2 + 1);
-  int tileColumn = villageX / 2;
-  int tileRow = villageY;
-  if ((villageX + villageY) % 2 == 0) {
-    tileRow--;
-  }
-  return tileColumn - (tileRow + 1) / 2 + (MAP_RADIUS - 1) - MAP_RADIUS;
-}
-
-int villageArrToTileY(int i) {
-  int villageX = i % (MAP_WIDTH * 2 + 1);
-  int villageY = i / (MAP_WIDTH * 2 + 1);
-  int tileRow = villageY;
-  if ((villageX + villageY) % 2 == 0) {
-    tileRow--;
-  }
-  return tileRow - 2;
-}
-
 bool areNeighbours(int a, int b) {
   VillageAsTileXYConnection villageA = villageIntToTileXYConnection(a);
   VillageAsTileXYConnection villageB = villageIntToTileXYConnection(b);
@@ -124,24 +99,22 @@ std::vector<int> villagesNextToTile(GameBoard board, int tile) {
       continue;
     }
     int player = board.villages[i];
-    int tileX = villageArrToTileX(i);
-    int tileY = villageArrToTileY(i);
-    bool isUpper = villageArrToUpperBool(i);
+    VillageAsTileXYConnection village = villageIntToTileXYConnection(i);
     int arrs[6];
-    if (isUpper) {
-      arrs[0] = tileX - 1;
-      arrs[1] = tileY + 1;
-      arrs[2] = tileX;
-      arrs[3] = tileY + 1;
-      arrs[4] = tileX;
-      arrs[5] = tileY;
+    if (village.isUpper) {
+      arrs[0] = village.x - 1;
+      arrs[1] = village.y + 1;
+      arrs[2] = village.x;
+      arrs[3] = village.y + 1;
+      arrs[4] = village.x;
+      arrs[5] = village.y;
     } else {
-      arrs[0] = tileX + 1;
-      arrs[1] = tileY - 1;
-      arrs[2] = tileX;
-      arrs[3] = tileY - 1;
-      arrs[4] = tileX;
-      arrs[5] = tileY;
+      arrs[0] = village.x + 1;
+      arrs[1] = village.y - 1;
+      arrs[2] = village.x;
+      arrs[3] = village.y - 1;
+      arrs[4] = village.x;
+      arrs[5] = village.y;
     }
     for (int j = 0; j < 3; j++) {
       int x = arrs[j * 2] + MAP_RADIUS;
@@ -228,7 +201,7 @@ bool hasRoadSpot(GameBoard board, int playerID) {
 }
 
 bool isValidVillageLocationForPlayer(GameBoard board, int villageLocation, int playerID) {
-  return isValidVillageLocation(board, villageLocation, playerID) && villageLocationNextToPlayersRoad(board, villageLocation, playerID);
+  return isValidVillageLocation(board, villageLocation) && villageLocationNextToPlayersRoad(board, villageLocation, playerID);
 }
 
 bool villageOnBoard(int village) {
@@ -239,41 +212,19 @@ bool villageOnBoard(int x, int y) {
   return !(x + y < 2 || MAP_WIDTH * 2 - x + y < 2 || MAP_WIDTH - y + x < 2 || MAP_WIDTH * 3 - y - x < 2);
 }
 
-bool isValidVillageLocation(GameBoard board, int villageLocation, int playerID) {
-  //std::cout << "Was asked if " << villageLocation << " is a valid location for player " << playerID << "\n";
+bool isValidVillageLocation(GameBoard board, int villageLocation) {
   if (board.villages[villageLocation] != -1) {
-    //std::cout << "There is already a village from player " << board.villages[villageLocation] << " there\n";
     return false;
   }
-  int villageX = villageLocation % (MAP_WIDTH * 2 + 1);
-  int villageY = villageLocation / (MAP_WIDTH * 2 + 1);
-  if (!villageOnBoard(villageX, villageY)) {
-    //std::cout << "Village is so far in corner that it is out of map\n";
+  if (!villageOnBoard(villageLocation)) {
     return false;
   }
-  int tileX = villageArrToTileX(villageLocation);
-  int tileY = villageArrToTileY(villageLocation);
-  bool isUpper = villageArrToUpperBool(villageLocation);
-  int arrs[3];
-  if (isUpper) {
-    arrs[0] = villageArrayLocation(false, tileX - 1, tileY + 1);
-    arrs[1] = villageArrayLocation(false, tileX, tileY + 1);
-    arrs[2] = villageArrayLocation(false, tileX - 1, tileY + 2);
-  } else {
-    arrs[0] = villageArrayLocation(true, tileX + 1, tileY - 1);
-    arrs[1] = villageArrayLocation(true, tileX, tileY - 1);
-    arrs[2] = villageArrayLocation(true, tileX + 1, tileY - 2);
-  }
-  for (int i = 0; i < 3; i++) {
-    if (arrs[i] < 0 || arrs[i] >= VILLAGE_ARRAY_LENGTH) {
-      continue;
-    }
-    if (board.villages[arrs[i]] != -1) {
-      //std::cout << "Someone's village was already next to " << villageLocation << "\n";
+  std::vector<int> neighbours = getVillageNeighbours(villageLocation);
+  for (int i = 0; i < neighbours.size(); i++) {
+    if (board.villages[neighbours[i]] != -1) {
       return false;
     }
   }
-  //std::cout << "Let's hope so\n";
   return true;
 }
 
