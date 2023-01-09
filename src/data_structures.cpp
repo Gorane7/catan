@@ -117,10 +117,39 @@ int abstractTileToTile(int abstractTile) {
   return MAP_WIDTH * MAP_WIDTH;
 }
 
+int roadToAbstractRoad(int tile) {
+  int c = 0;
+  for (int i = 0; i < tile; i++) {
+    if (isValidRoad(i)) {
+      c++;
+    }
+  }
+  return c;
+}
+
+int abstractRoadToRoad(int abstractTile) {
+  int c = 0;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH * VILLAGE_ARRAY_LENGTH; i++) {
+    if (isValidRoad(i)) {
+      if (c == abstractTile) {
+        return i;
+      }
+      c++;
+    }
+  }
+  return MAP_WIDTH * MAP_WIDTH;
+}
+
 bool isValidTile(int i) {
   int x = i % MAP_WIDTH - MAP_RADIUS;
   int y = i / MAP_WIDTH - MAP_RADIUS;
   return !(x + y > MAP_RADIUS || x + y < - MAP_RADIUS);
+}
+
+bool isValidRoad(int road) {
+  int villageA = road / VILLAGE_ARRAY_LENGTH;
+  int villageB = road % VILLAGE_ARRAY_LENGTH;
+  return villageA > villageB && areVillagesNeighbours(villageA, villageB) && villageOnBoard(villageA) && villageOnBoard(villageB);
 }
 
 bool isValidRoadLocation(int roadLocation) {

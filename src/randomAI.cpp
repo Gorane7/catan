@@ -16,7 +16,7 @@ int RandomAI::freeVillageLocation(GameBoard board, int myIndex) {
 }
 
 int RandomAI::freeRoadLocation(GameBoard board, int myIndex, int nextToVillage) {
-  int answer = rand() % ROAD_ARRAY_LENGTH;
+  int answer = rand() % ROAD_LOCATION_AMOUNT;
   //std::cout << "PLayer with index " << myIndex << " was asked to place a road next to village " << nextToVillage << " and the answer was " << answer << "\n";
   return answer;
 }
@@ -50,8 +50,8 @@ Action RandomAI::getAction(GameBoard board, PlayerResources resources[], int dev
     action.actionType = PLAY_DEVELOPMENT_CARD;
     action.actionLocation = developmentCardType;
     if (developmentCardType == ROAD_BUILDING_CARD) {
-      action.secondaryActionLocation = rand() % ROAD_ARRAY_LENGTH;
-      action.tertiaryActionLocation = rand() % ROAD_ARRAY_LENGTH;
+      action.secondaryActionLocation = rand() % ROAD_LOCATION_AMOUNT;
+      action.tertiaryActionLocation = rand() % ROAD_LOCATION_AMOUNT;
     } else if (developmentCardType == YEAR_OF_PLENTY_CARD) {
       action.secondaryActionLocation = rand() % RESOURCE_TYPE_AMOUNT;
       action.tertiaryActionLocation = rand() % RESOURCE_TYPE_AMOUNT;

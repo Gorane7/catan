@@ -128,8 +128,8 @@ bool hasVillageSpot(GameBoard board, int playerID) {
 
 std::vector<int> availableRoadSpots(GameBoard board, int playerID) {
   std::vector<int> roadSpots;
-  for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
-    if (isValidRoadLocationForPlayer(board, i, playerID)) {
+  for (int i = 0; i < ROAD_LOCATION_AMOUNT; i++) {
+    if (isValidRoadLocationForPlayer(board, abstractRoadToRoad(i), playerID)) {
       roadSpots.push_back(i);
     }
   }

@@ -38,6 +38,9 @@ bool isValidRoadLocation(int);
 bool isValidTile(int);
 int tileToAbstractTile(int);
 int abstractTileToTile(int);
+bool isValidRoad(int);
+int roadToAbstractRoad(int);
+int abstractRoadToRoad(int);
 
 VillageAsTileXYConnection getNorthVillageNeighbour(VillageAsTileXYConnection);
 VillageAsTileXYConnection getSouthEastVillageNeighbour(VillageAsTileXYConnection);

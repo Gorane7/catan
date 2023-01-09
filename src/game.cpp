@@ -212,7 +212,7 @@ void doRoadPlacement(Game& game) {
   int roadLocation;
   int villageLocation = game.history.back()[2];
   do {
-    roadLocation = game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation);
+    roadLocation = abstractRoadToRoad(game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation));
   }
   while (!isValidRoadLocationNextToVillage(roadLocation, game.currentTurn, villageLocation));
 
@@ -237,9 +237,10 @@ bool doEndTurnAction(Game& game) {
 }
 
 bool doBuildRoadAction(Game& game, Action action) {
-  if (isValidRoadLocationForPlayer(game.board, action.actionLocation, game.currentTurn)) {
+  int road = abstractRoadToRoad(action.actionLocation);
+  if (isValidRoadLocationForPlayer(game.board, road, game.currentTurn)) {
     //std::cout << "Player " << game.currentTurn << " built road\n";
-    game.board.roads[action.actionLocation] = game.currentTurn;
+    game.board.roads[road] = game.currentTurn;
     game.resources[game.currentTurn].resources[WOOD]--;
     game.resources[game.currentTurn].resources[CLAY]--;
     return true;
@@ -329,14 +330,16 @@ bool tryToUseMonopolyCard(Game& game, Action action) {
 }
 
 bool tryToUseRoadBuildingCard(Game& game, Action action) {
-  if (isValidRoadLocationForPlayer(game.board, action.secondaryActionLocation, game.currentTurn)) {
-    game.board.roads[action.secondaryActionLocation] = game.currentTurn;
-    if (isValidRoadLocationForPlayer(game.board, action.tertiaryActionLocation, game.currentTurn)) {
-      game.board.roads[action.tertiaryActionLocation] = game.currentTurn;
+  int firstRoad = abstractRoadToRoad(action.secondaryActionLocation);
+  if (isValidRoadLocationForPlayer(game.board, firstRoad, game.currentTurn)) {
+    game.board.roads[firstRoad] = game.currentTurn;
+    int secondRoad = abstractRoadToRoad(action.tertiaryActionLocation);
+    if (isValidRoadLocationForPlayer(game.board, secondRoad, game.currentTurn)) {
+      game.board.roads[secondRoad] = game.currentTurn;
       //std::cout << "Player " << game.currentTurn << " used road building successfully\n";
       return true;
     } else {
-      game.board.roads[action.secondaryActionLocation] = -1;
+      game.board.roads[firstRoad] = -1;
       //std::cout << "Player " << game.currentTurn << " used road building unsuccessfully after building 1 road\n";
     }
   }
