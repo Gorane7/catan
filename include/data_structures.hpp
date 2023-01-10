@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <array>
+#include "constants.hpp"
 
 struct VillageAsTileXYConnection {
   int x;
@@ -17,6 +18,11 @@ struct VillageAsGridXY {
 
 struct VillageAsInt {
   int i;
+};
+
+struct Cache {
+  int roadToAbstractRoad[VILLAGE_ARRAY_LENGTH * VILLAGE_ARRAY_LENGTH];
+  int abstractRoadToRoad[ROAD_LOCATION_AMOUNT];
 };
 
 VillageAsTileXYConnection villageIntToTileXYConnection(int);
@@ -41,6 +47,8 @@ int abstractTileToTile(int);
 bool isValidRoad(int);
 int roadToAbstractRoad(int);
 int abstractRoadToRoad(int);
+
+Cache initCache();
 
 VillageAsTileXYConnection getNorthVillageNeighbour(VillageAsTileXYConnection);
 VillageAsTileXYConnection getSouthEastVillageNeighbour(VillageAsTileXYConnection);

@@ -129,7 +129,7 @@ bool hasVillageSpot(GameBoard board, int playerID) {
 std::vector<int> availableRoadSpots(GameBoard board, int playerID) {
   std::vector<int> roadSpots;
   for (int i = 0; i < ROAD_LOCATION_AMOUNT; i++) {
-    if (isValidRoadLocationForPlayer(board, abstractRoadToRoad(i), playerID)) {
+    if (isValidRoadLocationForPlayer(board, board.cache.abstractRoadToRoad[i], playerID)) {
       roadSpots.push_back(i);
     }
   }
@@ -209,6 +209,7 @@ GameBoard randomBoard(int playerAmount, bool numbersAreIndex) {
   board.playerAmount = playerAmount;
   board.villageAmount = 0;
   board.roadAmount = 0;
+  board.cache = initCache();
 
   for (int i = 0; i < ROAD_ARRAY_LENGTH; i++) {
     board.roads[i] = -1;

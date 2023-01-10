@@ -117,6 +117,20 @@ int abstractTileToTile(int abstractTile) {
   return MAP_WIDTH * MAP_WIDTH;
 }
 
+Cache initCache() {
+  Cache cache;
+  int arc = 0;
+  for (int i = 0; i < VILLAGE_ARRAY_LENGTH * VILLAGE_ARRAY_LENGTH; i++) {
+    cache.roadToAbstractRoad[i] = -1;
+    if (isValidRoad(i)) {
+      cache.roadToAbstractRoad[i] = arc;
+      cache.abstractRoadToRoad[arc] = i;
+      arc++;
+    }
+  }
+  return cache;
+}
+
 int roadToAbstractRoad(int tile) {
   int c = 0;
   for (int i = 0; i < tile; i++) {

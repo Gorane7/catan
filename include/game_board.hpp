@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "constants.hpp"
+#include "data_structures.hpp"
 
 
 const int ROAD_ARRAY_LENGTH = VILLAGE_ARRAY_LENGTH * VILLAGE_ARRAY_LENGTH;
@@ -18,7 +19,6 @@ const int NUMBER_AMOUNT = FOREST_AMOUNT + PASTURE_AMOUNT + FIELD_AMOUNT + MOUNTA
 const int DESERT_AMOUNT = TILE_AMOUNT - NUMBER_AMOUNT;
 const int TILE_TYPE_AMOUNT = 6;
 const int VILLAGE_LOCATION_AMOUNT = 54;
-const int ROAD_LOCATION_AMOUNT = 72;
 
 // Following code block contains information that needs to match each other and previous information
 const int NUMBERS[NUMBER_AMOUNT] = {2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12};
@@ -67,6 +67,8 @@ struct GameBoard {
   int playerAmount;
   int villageAmount;
   int roadAmount;
+
+  Cache cache;
 };
 
 int numberAtTile(GameBoard, int);

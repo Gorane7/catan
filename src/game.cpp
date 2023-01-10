@@ -212,7 +212,7 @@ void doRoadPlacement(Game& game) {
   int roadLocation;
   int villageLocation = game.history.back()[2];
   do {
-    roadLocation = abstractRoadToRoad(game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation));
+    roadLocation = game.board.cache.abstractRoadToRoad[game.players[game.currentTurn].freeRoadLocation(game.board, game.currentTurn, villageLocation)];
   }
   while (!isValidRoadLocationNextToVillage(roadLocation, game.currentTurn, villageLocation));
 
@@ -237,7 +237,7 @@ bool doEndTurnAction(Game& game) {
 }
 
 bool doBuildRoadAction(Game& game, Action action) {
-  int road = abstractRoadToRoad(action.actionLocation);
+  int road = game.board.cache.abstractRoadToRoad[action.actionLocation];
   if (isValidRoadLocationForPlayer(game.board, road, game.currentTurn)) {
     //std::cout << "Player " << game.currentTurn << " built road\n";
     game.board.roads[road] = game.currentTurn;
@@ -330,10 +330,10 @@ bool tryToUseMonopolyCard(Game& game, Action action) {
 }
 
 bool tryToUseRoadBuildingCard(Game& game, Action action) {
-  int firstRoad = abstractRoadToRoad(action.secondaryActionLocation);
+  int firstRoad = game.board.cache.abstractRoadToRoad[action.secondaryActionLocation];
   if (isValidRoadLocationForPlayer(game.board, firstRoad, game.currentTurn)) {
     game.board.roads[firstRoad] = game.currentTurn;
-    int secondRoad = abstractRoadToRoad(action.tertiaryActionLocation);
+    int secondRoad = game.board.cache.abstractRoadToRoad[action.tertiaryActionLocation];
     if (isValidRoadLocationForPlayer(game.board, secondRoad, game.currentTurn)) {
       game.board.roads[secondRoad] = game.currentTurn;
       //std::cout << "Player " << game.currentTurn << " used road building successfully\n";
